@@ -104,10 +104,6 @@ int main()
 
 bool RayCast(const Point* const origin, const Point* const direction, const Face* const triangle)
 {
-	/*
-	Note that this technique can be made faster if the triangle's normal as well as the value D from the plane equation are precomputed and stored in memory for each triangle of the scene.
-	*/
-
 	// Step 1: finding P
 	
 	// Calculating whether ray and plane are paralel. In that case the intersection can't be calculated.
@@ -164,4 +160,7 @@ bool RayCast(const Point* const origin, const Point* const direction, const Face
 /*
 I'm mainly following the instructions given here:
 https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/ray-triangle-intersection-geometric-solution
+
+Also reading:
+https://www.ics.uci.edu/~gopi/CS211B/RayTracing%20tutorial.pdf
 */
