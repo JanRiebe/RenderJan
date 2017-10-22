@@ -38,4 +38,12 @@ void Face::calculateNAndD()
 	calculateDistance();
 }
 
+const Point* const Face::getNormal() const
+{
+	return &normal;
+}
 
+float Face::getDistance() const
+{
+	return distance;
+}

@@ -90,9 +90,9 @@ int main()
 	Point direction(xd, yd, zd);
 
 	if (RayCast(&origin, &direction, &face))
-		cout << ":)   /+\    The ray hits the triangle!\n\n";
+		cout << ":)   /+\\    The ray hits the triangle!\n\n";
 	else
-		cout << ":(   +/\    The ray does not hit the triangle.\n\n";
+		cout << ":(   +/\\    The ray does not hit the triangle.\n\n";
 
 
 	system("pause");
@@ -108,12 +108,12 @@ bool RayCast(const Point* const origin, const Point* const direction, const Face
 	
 	// Calculating whether ray and plane are paralel. In that case the intersection can't be calculated.
 
-	float dot = Point::DotProduct(&((*triangle).normal), direction);
+	float dot = Point::DotProduct(triangle->getNormal(), direction);
 	if (dot == 0)
 		return false; // No intersection because the triangle and the ray are parallel.
 
 	// Calculating t, the distance to the hit point.
-	float t = -(Point::DotProduct(&((*triangle).normal), origin) + (*triangle).distance) / dot;
+	float t = -(Point::DotProduct(triangle->getNormal(), origin) + triangle->getDistance()) / dot;
 	if (t < 0)
 		return false; // No intersection because the triangle is behind the camera.
 
@@ -131,21 +131,21 @@ bool RayCast(const Point* const origin, const Point* const direction, const Face
 	Point edge0 = Point::subtr(v1,v0);
 	Point vp0 = Point::subtr(P,v0);
 	C = Point::CrossProduct(&edge0,&vp0);
-	if (Point::DotProduct(&((*triangle).normal),&C) < 0) 
+	if (Point::DotProduct(triangle->getNormal(),&C) < 0) 
 		return false; // P is outside of the triangle
 
 	// edge 1
 	Point edge1 = Point::subtr(v2,v1);
 	Point vp1 = Point::subtr(P,v1);
 	C = Point::CrossProduct(&edge1, &vp1);
-	if (Point::DotProduct(&((*triangle).normal), &C) < 0)
+	if (Point::DotProduct(triangle->getNormal(), &C) < 0)
 		return false; // P is outside of the triangle
 
 	// edge 2
 	Point edge2 = Point::subtr(v0,v2);
 	Point vp2 = Point::subtr(P,v2);
 	C = Point::CrossProduct(&edge2, &vp2);
-	if (Point::DotProduct(&((*triangle).normal), &C) < 0)
+	if (Point::DotProduct(triangle->getNormal(), &C) < 0)
 		return false; // P is outside of the triangle
 
 	return true; // this ray hits the triangle 
