@@ -10,7 +10,19 @@
 
 using namespace std;
 
-// Determines whether a given ray hits a given triangle.
+
+
+/// <summary>Determines whether a given ray hits a given Face.
+/// <param name="origin">origin: A pointer to the Point that defines where the ray starts.</param>
+/// <param name="direction">direction: A pointer to the Point that defines the direction of the ray.</param>
+/// <param name="triangle">
+/// triangle: A pointer to the Face that is checked for the collision.
+/// Important: If the triangle has changed since the last cast,
+/// the variables "normal" and "distance" should be updated before the raycast,
+/// by calling theFaceObject.calculateNAndD().
+/// </param>
+/// <returns>returns: true = the ray hits the triangle, false = the ray doesn't hit the triangle.</returns>  
+/// </summary>  
 bool RayCast(const Point* const origin, const Point* const direction , const Face* const triangle);
 
 
@@ -104,10 +116,21 @@ int main()
 
 bool RayCast(const Point* const origin, const Point* const direction, const Face* const triangle)
 {
-	// Step 1: finding P
+	/*
+	The collision testing has to main steps:
+		1: Finding the point at which the ray collides with the edgeless plane defined by the triangle.
+		2: Determining whether this point lies within the triangle.
+	
+	Several conditions will show us allready during step 1 that the ray doesn't hit.
+	In that case step 2 doesn't have to be executed.
+		If the triangle and the ray are parallel.
+		If the distance at which a collision occurs is negative.
+			This occurs since the ray is a linear equasion and as such goes forwards and backwards at the same time.
+	*/
+
+	// Step 1: finding the position of the hit point, posHitPoint
 	
 	// Calculating whether ray and plane are paralel. In that case the intersection can't be calculated.
-
 	float dot = Point::DotProduct(triangle->getNormal(), direction);
 	if (dot == 0)
 		return false; // No intersection because the triangle and the ray are parallel.
@@ -118,7 +141,8 @@ bool RayCast(const Point* const origin, const Point* const direction, const Face
 		return false; // No intersection because the triangle is behind the camera.
 
 	// Calculating P, the position of the hit point.
-	const Point * const P = &(Point::add(origin, &(Point::mult(direction, t))));
+	const Point * const posHitPoint = &(Point::add(origin, &(Point::mult(direction, t))));
+
 
 	// Step 2: inside-outside test
 	Point C; // vector perpendicular to triangle's plane
@@ -129,24 +153,24 @@ bool RayCast(const Point* const origin, const Point* const direction, const Face
 
 	// edge 0
 	Point edge0 = Point::subtr(v1,v0);
-	Point vp0 = Point::subtr(P,v0);
+	Point vp0 = Point::subtr(posHitPoint, v0);
 	C = Point::CrossProduct(&edge0,&vp0);
-	if (Point::DotProduct(triangle->getNormal(),&C) < 0) 
-		return false; // P is outside of the triangle
+	if (Point::DotProduct(triangle->getNormal(), &C) < 0) 
+		return false; // posHitPoint is outside of the triangle
 
 	// edge 1
 	Point edge1 = Point::subtr(v2,v1);
-	Point vp1 = Point::subtr(P,v1);
+	Point vp1 = Point::subtr(posHitPoint, v1);
 	C = Point::CrossProduct(&edge1, &vp1);
 	if (Point::DotProduct(triangle->getNormal(), &C) < 0)
-		return false; // P is outside of the triangle
+		return false; // posHitPoint is outside of the triangle
 
 	// edge 2
 	Point edge2 = Point::subtr(v0,v2);
-	Point vp2 = Point::subtr(P,v2);
+	Point vp2 = Point::subtr(posHitPoint, v2);
 	C = Point::CrossProduct(&edge2, &vp2);
 	if (Point::DotProduct(triangle->getNormal(), &C) < 0)
-		return false; // P is outside of the triangle
+		return false; // posHitPoint is outside of the triangle
 
 	return true; // this ray hits the triangle 
 }
