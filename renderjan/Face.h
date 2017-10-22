@@ -3,7 +3,7 @@
 #include "Point.h"
 #include "Vertex.h"
 
-
+/// <summary>Faces are the visible elements of geometry.</summary>
 class Face
 {
 

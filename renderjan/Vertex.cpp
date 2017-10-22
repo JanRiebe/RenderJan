@@ -4,11 +4,6 @@
 
 Vertex::Vertex(Point* pos):
 	position(pos)
-{
-
-}
+{}
 
 
-Vertex::~Vertex()
-{
-}
