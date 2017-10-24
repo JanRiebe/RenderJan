@@ -55,10 +55,3 @@ void Point::Normalise(Point* const pointToBeChanged)
 	(*pointToBeChanged).z /= length;
 }
 
-
-
-
-Point Point::RotatedBy(const Point* const originalPoint, const Point* const rotationValues)
-{
-
-}

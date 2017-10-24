@@ -26,15 +26,81 @@ using namespace std;
 bool RayCast(const Point* const origin, const Point* const direction , const Face* const triangle);
 
 void CheckOneTriangle();
-void RenderBoolTextOutput(const Point* const cameraDirection, const Face* const triangle, int resolutionX, int resolutionY, float viewAngle);
+
+//Renders and outputs a text representation of the specified triangle with an orthogonal camera at 0,0,0 looking along he X-axis.
+void RenderBoolTextOutput(const Face* const triangle, int resolutionX, int resolutionY);
 
 
 int main()
 {
-	
+	char input;
+
+	cout << "Do you want to continue? y/n\n";
+	cin >> input;
+
+	while (input != 'n')
+	{
+		cout << "Please enter the coordinates of the triangle.\n";
+		cout << "Vertex 0:\n";
+		cout << "x: ";
+		float x0;
+		cin >> x0;
+		cout << "y: ";
+		float y0;
+		cin >> y0;
+		cout << "z: ";
+		float z0;
+		cin >> z0;
+		cout << "\n";
+		cout << "Vertex 1:\n";
+		cout << "x: ";
+		float x1;
+		cin >> x1;
+		cout << "y: ";
+		float y1;
+		cin >> y1;
+		cout << "z: ";
+		float z1;
+		cin >> z1;
+		cout << "\n";
+		cout << "Vertex 2:\n";
+		cout << "x: ";
+		float x2;
+		cin >> x2;
+		cout << "y: ";
+		float y2;
+		cin >> y2;
+		cout << "z: ";
+		float z2;
+		cin >> z2;
+		cout << "\n";
+		Point p0(x0, y0, z0);
+		Point p1(x1, y1, z1);
+		Point p2(x2, y2, z2);
+		Vertex v0(&p0);
+		Vertex v1(&p1);
+		Vertex v2(&p2);
+		Face face(&v0, &v1, &v2);
+		face.calculateNAndD();
+
+		int resolutionX, resolutionY;
+
+		cout << "\nPlease enter x resolution: ";
+		cin >> resolutionX;
+		cout << "\nPlease enter y resolution: ";
+		cin >> resolutionY;
+
+		cout << endl;
+
+		RenderBoolTextOutput(&face, resolutionX, resolutionY);
 
 
-	system("pause");
+
+		cout << "Do you want to continue? y/n\n";
+		cin >> input;
+	}
+
+	//system("pause");
 	return 0;
 }
 
@@ -188,20 +254,33 @@ void CheckOneTriangle()
 
 
 
-void RenderBoolTextOutput(const Point* const cameraDirection, const Face* const triangle, int resolutionX, int resolutionY, float viewAngle)
+void RenderBoolTextOutput(const Face* const triangle, int resolutionX, int resolutionY)
 {
-	
 	for (int x = 0; x < resolutionX; ++x)
 	{
-		for (int y = 0; y < resolutionY; y++)
+		cout << "-";
+	}
+	cout << endl;
+
+	for (int y = 0; y < resolutionX; ++y)
+	{
+		cout << "|";
+		for (int x = 0; x < resolutionY; x++)
 		{
-			if (RayCast(new Point(0,0,0), (*cameraDirection).+jnj,triangle))
+			if (RayCast(new Point(0, y-resolutionY/2, x-resolutionX/2), new Point(1, 0, 0),triangle))
 				cout << "X";
 			else
 				cout << " ";
 		}
-		cout << "\n";
+		cout << "|\n";
 	}
+
+
+	for (int x = 0; x < resolutionX; ++x)
+	{
+		cout << "-";
+	}
+	cout << endl;
 }
 
 

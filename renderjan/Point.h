@@ -58,7 +58,6 @@ public:
 	/// </summary>
 	static void Normalise(Point* const pointToBeChanged);
 
-	static Point RotatedBy(const Point* const originalPoint, const Point* const rotationValues);
 #pragma endregion
 
 
