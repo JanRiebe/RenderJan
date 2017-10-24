@@ -57,6 +57,8 @@ public:
 	/// <exception>Throws exception if x, y, z of pointToBeChanged are all 0.</exception>
 	/// </summary>
 	static void Normalise(Point* const pointToBeChanged);
+
+	static Point RotatedBy(const Point* const originalPoint, const Point* const rotationValues);
 #pragma endregion
 
 
