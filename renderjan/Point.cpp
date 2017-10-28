@@ -10,26 +10,26 @@ Point::Point(float X, float Y, float Z) :
 {}
 
 
-Point Point::mult(const Point* const p, float f)
+Point* Point::mult(const Point* const p, float f)
 {
-	return Point((*p).x*f, (*p).y*f, (*p).z*f);
+	return new Point((*p).x*f, (*p).y*f, (*p).z*f);
 }
 
 
-Point Point::add(const Point* const p1, const Point* const p2)
+Point* Point::add(const Point* const p1, const Point* const p2)
 {
-	return Point((*p1).x + (*p2).x, (*p1).y + (*p2).y, (*p1).z + (*p2).z);
+	return new Point((*p1).x + (*p2).x, (*p1).y + (*p2).y, (*p1).z + (*p2).z);
 }
 
 
-Point Point::subtr(const Point* const p1, const Point* const p2)
+Point* Point::subtr(const Point* const p1, const Point* const p2)
 {
-	return Point((*p1).x - (*p2).x, (*p1).y - (*p2).y, (*p1).z - (*p2).z);
+	return new Point((*p1).x - (*p2).x, (*p1).y - (*p2).y, (*p1).z - (*p2).z);
 }
 
-Point Point::CrossProduct(const Point* const v1, const Point* const v2)
+Point* Point::CrossProduct(const Point* const v1, const Point* const v2)
 {
-	return Point(
+	return new Point(
 		(*v1).y * (*v2).z - (*v1).z * (*v2).y,
 		(*v1).z * (*v2).x - (*v1).x * (*v2).z,
 		(*v1).x * (*v2).y - (*v1).y * (*v2).x);

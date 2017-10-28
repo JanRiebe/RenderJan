@@ -20,35 +20,35 @@ public:
 	/// <summary>Multiplies x, y, z of a point by a factor.
 	/// <param name="p">p: A pointer to the Point which values should be used in the multiplication.</param>
 	/// <param name="f">f: The factor by which the values of p should be multiplied.</param>
-	/// <returns>returns: A new Point object with the multiplied values.</returns>  
+	/// <returns>returns: A pointer to a new Point object on the heap with the multiplied values.</returns>  
 	/// </summary>  
-	static Point mult(const Point* p, float f);
+	static Point* mult(const Point* p, float f);
 
 	/// <summary>Adds x, y, z of two points.
 	/// <param name="p1">p1: A pointer to the first Point which values should be used in the addition.</param>
 	/// <param name="p2">p2: A pointer to the second Point which values should be used in the addition.</param>
-	/// <returns>returns: A new Point object with the added values.</returns>  
+	/// <returns>returns: A pointer to a new Point object on the heap with the added values.</returns>  
 	/// </summary>  
-	static Point add(const Point* const p1, const Point* const p2);
+	static Point* add(const Point* const p1, const Point* const p2);
 
 	/// <summary>Subtracts x, y, z of one point from those of another.
 	/// <param name="p1">p1: A pointer to the Point which holds the initial values.</param>
 	/// <param name="p2">p2: A pointer to the Point which holds the values that will be subtracted from p1.</param>
-	/// <returns>returns: A new Point object with the subtracted values, p1-p2.</returns>  
+	/// <returns>returns: A pointer to a new Point object on the heap with the subtracted values, p1-p2.</returns>  
 	/// </summary>  
-	static Point subtr(const Point* const p1, const Point* const p2);
+	static Point* subtr(const Point* const p1, const Point* const p2);
 
 	/// <summary>Calculates the cross product of two points.
 	/// <param name="p1">p1: A pointer to a Point.</param>
 	/// <param name="p2">p2: A pointer to a Point.</param>
-	/// <returns>returns: A new Point object that represents the cross product of p1 and p2.</returns>  
+	/// <returns>returns: A pointer to a new Point object on the heap that represents the cross product of p1 and p2.</returns>  
 	/// </summary>
-	static Point CrossProduct(const Point* v1, const Point* v2);
+	static Point* CrossProduct(const Point* v1, const Point* v2);
 
 	/// <summary>Calculates the dot product of two points.
 	/// <param name="p1">p1: A pointer to a Point.</param>
 	/// <param name="p2">p2: A pointer to a Point.</param>
-	/// <returns>returns: A new Point object that represents the dot product of p1 and p2.</returns>  
+	/// <returns>returns: A float value that represents the dot product of p1 and p2.</returns>  
 	/// </summary>
 	static float DotProduct(const Point* const v1, const Point* const v2);
 

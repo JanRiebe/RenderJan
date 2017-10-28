@@ -32,6 +32,7 @@ int main()
 {
 	cout << "Welcome to Renderjan!\n\n";
 	cout << "So far the system can only calculate whether a ray hits a triangle.\n\n";
+	/*
 	cout << "Please enter the coordinates of the triangle.\n";
 	cout << "Vertex 0:\n";
 	cout << "x: ";
@@ -69,12 +70,17 @@ int main()
 	Point p0(x0, y0, z0);
 	Point p1(x1, y1, z1);
 	Point p2(x2, y2, z2);
+	*/
+	Point p0(1, 1, 0);
+	Point p1(1, -1, 1);
+	Point p2(1, -1, -1);
 	Vertex v0(&p0);
 	Vertex v1(&p1);
 	Vertex v2(&p2);
 	Face face(&v0, &v1, &v2);
 	face.calculateNAndD();
 
+	/*
 	cout << "Please enter the origin of the ray.\n";
 	cout << "x: ";
 	float xo;
@@ -100,6 +106,10 @@ int main()
 	cin >> zd;
 	cout << "\n";
 	Point direction(xd, yd, zd);
+	*/
+	Point origin(0, 0, 0);
+	Point direction(1, 0, 0);
+
 
 	if (RayCast(&origin, &direction, &face))
 		cout << ":)   /+\\    The ray hits the triangle!\n\n";
@@ -141,38 +151,62 @@ bool RayCast(const Point* const origin, const Point* const direction, const Face
 		return false; // No intersection because the triangle is behind the camera.
 
 	// Calculating P, the position of the hit point.
-	const Point * const posHitPoint = &(Point::add(origin, &(Point::mult(direction, t))));
+	const Point * const posHitPoint = Point::add(origin, Point::mult(direction, t));
 
 
 	// Step 2: inside-outside test
-	Point C; // vector perpendicular to triangle's plane
+	Point* C; // vector perpendicular to triangle's plane
 
 	Point* v0 = (*(*triangle).vertices[0]).position;
 	Point* v1 = (*(*triangle).vertices[1]).position;
 	Point* v2 = (*(*triangle).vertices[2]).position;
 
+	bool rayHitsTriangle = false;
+
 	// edge 0
-	Point edge0 = Point::subtr(v1,v0);
-	Point vp0 = Point::subtr(posHitPoint, v0);
-	C = Point::CrossProduct(&edge0,&vp0);
-	if (Point::DotProduct(triangle->getNormal(), &C) < 0) 
-		return false; // posHitPoint is outside of the triangle
+	Point* edge0 = Point::subtr(v1,v0);
+	Point* vp0 = Point::subtr(posHitPoint, v0);
+	C = Point::CrossProduct(edge0,vp0);
 
-	// edge 1
-	Point edge1 = Point::subtr(v2,v1);
-	Point vp1 = Point::subtr(posHitPoint, v1);
-	C = Point::CrossProduct(&edge1, &vp1);
-	if (Point::DotProduct(triangle->getNormal(), &C) < 0)
-		return false; // posHitPoint is outside of the triangle
+	delete edge0;
+	edge0 = nullptr;
+	delete vp0;
+	vp0 = nullptr;
+	
+	if (!(Point::DotProduct(triangle->getNormal(), C) < 0)) {			// The hit point is on the correct side of the edge.
 
-	// edge 2
-	Point edge2 = Point::subtr(v0,v2);
-	Point vp2 = Point::subtr(posHitPoint, v2);
-	C = Point::CrossProduct(&edge2, &vp2);
-	if (Point::DotProduct(triangle->getNormal(), &C) < 0)
-		return false; // posHitPoint is outside of the triangle
 
-	return true; // this ray hits the triangle 
+		// edge 1
+		Point* edge1 = Point::subtr(v2, v1);
+		Point* vp1 = Point::subtr(posHitPoint, v1);
+		C = Point::CrossProduct(edge1, vp1);
+
+		delete edge1;
+		edge1 = nullptr;
+		delete vp1;
+		vp1 = nullptr;
+
+		if (!(Point::DotProduct(triangle->getNormal(), C) < 0)) {		// The hit point is on the correct side of the edge.
+
+			// edge 2
+			Point* edge2 = Point::subtr(v0, v2);
+			Point* vp2 = Point::subtr(posHitPoint, v2);
+			C = Point::CrossProduct(edge2, vp2);
+
+			delete edge2;
+			edge2 = nullptr;
+			delete vp2;
+			vp2 = nullptr;
+
+			if (!(Point::DotProduct(triangle->getNormal(), C) < 0))		// The hit point is on the correct side of the edge.
+				rayHitsTriangle = true;
+		}
+	}
+
+	delete C;
+	delete posHitPoint;
+
+	return rayHitsTriangle;
 }
 
 

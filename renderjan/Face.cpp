@@ -15,15 +15,24 @@ Face::Face(Vertex* v0, Vertex* v1, Vertex* v2)
 
 void Face::calculateNormal()
 {
-	Point A = Point::subtr((*vertices[1]).position, (*vertices[0]).position); // edge 0
-	Point B = Point::subtr((*vertices[2]).position, (*vertices[0]).position); // edge 1
-	normal = Point::CrossProduct(&A, &B); // this is the triangle's normal
+	Point* A = Point::subtr((*vertices[1]).position, (*vertices[0]).position); // edge 0
+	Point* B = Point::subtr((*vertices[2]).position, (*vertices[0]).position); // edge 1
+	Point* newNormalPtr = Point::CrossProduct(A, B); // this is the triangle's normal
 	try {
-		Point::Normalise(&normal);
+		Point::Normalise(newNormalPtr);
 	}
 	catch (std::exception& e) {
 		std::cout << e.what()<<'\n';
 	}
+	normal = *newNormalPtr;
+
+	// Cleaning up the heap.
+	delete A;
+	delete B;
+	delete newNormalPtr;
+	A = nullptr;	// I wouldn't need to set these to nullptr, cause they'll go out of scope soon,
+	B = nullptr;	// But I do it for practice.
+	newNormalPtr = nullptr;
 }
 
 

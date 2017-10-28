@@ -7,3 +7,4 @@ Vertex::Vertex(Point* pos):
 {}
 
 
+
