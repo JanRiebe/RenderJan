@@ -145,6 +145,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BMPWriter.h" />
     <ClInclude Include="Face.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="resource.h" />
@@ -154,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3DDataStructs.cpp" />
+    <ClCompile Include="BMPWriter.cpp" />
     <ClCompile Include="Face.cpp" />
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="renderjan.cpp" />

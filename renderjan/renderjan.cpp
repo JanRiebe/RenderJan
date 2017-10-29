@@ -7,6 +7,7 @@
 #include "3DDataStructs.cpp"
 #include "Face.h"
 #include <iostream>
+#include "BMPWriter.h"
 
 using namespace std;
 
@@ -25,99 +26,82 @@ using namespace std;
 /// </summary>  
 bool RayCast(const Point* const origin, const Point* const direction , const Face* const triangle);
 
-
+void RenderBoolBMPOutput(const Face* const triangle, const int resolutionX, const int resolutionY, const char* filename);
 
 
 int main()
 {
 	cout << "Welcome to Renderjan!\n\n";
 	cout << "So far the system can only calculate whether a ray hits a triangle.\n\n";
-	/*
-	cout << "Please enter the coordinates of the triangle.\n";
-	cout << "Vertex 0:\n";
-	cout << "x: ";
-	float x0;
-	cin >> x0;
-	cout << "y: ";
-	float y0;
-	cin >> y0;
-	cout << "z: ";
-	float z0;
-	cin >> z0;
-	cout << "\n";
-	cout << "Vertex 1:\n";
-	cout << "x: ";
-	float x1;
-	cin >> x1;
-	cout << "y: ";
-	float y1;
-	cin >> y1;
-	cout << "z: ";
-	float z1;
-	cin >> z1;
-	cout << "\n";
-	cout << "Vertex 2:\n";
-	cout << "x: ";
-	float x2;
-	cin >> x2;
-	cout << "y: ";
-	float y2;
-	cin >> y2;
-	cout << "z: ";
-	float z2;
-	cin >> z2;
-	cout << "\n";
-	Point p0(x0, y0, z0);
-	Point p1(x1, y1, z1);
-	Point p2(x2, y2, z2);
-	*/
-	Point p0(1, 1, 0);
-	Point p1(1, -1, 1);
-	Point p2(1, -1, -1);
-	Vertex v0(&p0);
-	Vertex v1(&p1);
-	Vertex v2(&p2);
-	Face face(&v0, &v1, &v2);
-	face.calculateNAndD();
+	char input;
 
-	/*
-	cout << "Please enter the origin of the ray.\n";
-	cout << "x: ";
-	float xo;
-	cin >> xo;
-	cout << "y: ";
-	float yo;
-	cin >> yo;
-	cout << "z: ";
-	float zo;
-	cin >> zo;
-	cout << "\n";
-	Point origin(xo, yo, zo);
+	cout << "Do you want to continue? y/n\n";
+	cin >> input;
 
-	cout << "Please enter the direction of the ray.\n";
-	cout << "x: ";
-	float xd;
-	cin >> xd;
-	cout << "y: ";
-	float yd;
-	cin >> yd;
-	cout << "z: ";
-	float zd;
-	cin >> zd;
-	cout << "\n";
-	Point direction(xd, yd, zd);
-	*/
-	Point origin(0, 0, 0);
-	Point direction(1, 0, 0);
+	while (input != 'n')
+	{
+		cout << "Please enter the coordinates of the triangle.\n";
+		cout << "Vertex 0:\n";
+		cout << "x: ";
+		float x0;
+		cin >> x0;
+		cout << "y: ";
+		float y0;
+		cin >> y0;
+		cout << "z: ";
+		float z0;
+		cin >> z0;
+		cout << "\n";
+		cout << "Vertex 1:\n";
+		cout << "x: ";
+		float x1;
+		cin >> x1;
+		cout << "y: ";
+		float y1;
+		cin >> y1;
+		cout << "z: ";
+		float z1;
+		cin >> z1;
+		cout << "\n";
+		cout << "Vertex 2:\n";
+		cout << "x: ";
+		float x2;
+		cin >> x2;
+		cout << "y: ";
+		float y2;
+		cin >> y2;
+		cout << "z: ";
+		float z2;
+		cin >> z2;
+		cout << "\n";
+		Point p0(x0, y0, z0);
+		Point p1(x1, y1, z1);
+		Point p2(x2, y2, z2);
+		Vertex v0(&p0);
+		Vertex v1(&p1);
+		Vertex v2(&p2);
+		Face face(&v0, &v1, &v2);
+		face.calculateNAndD();
+
+		int resolutionX, resolutionY;
+
+		cout << "\nPlease enter x resolution: ";
+		cin >> resolutionX;
+		cout << "\nPlease enter y resolution: ";
+		cin >> resolutionY;
+
+		cout << endl;
+
+		string filename = "C:\\Users\\Jan\\Desktop\\renderjan_test\\test.bmp";
+		
+		RenderBoolBMPOutput(&face, resolutionX, resolutionY, filename.c_str());
 
 
-	if (RayCast(&origin, &direction, &face))
-		cout << ":)   /+\\    The ray hits the triangle!\n\n";
-	else
-		cout << ":(   +/\\    The ray does not hit the triangle.\n\n";
 
+		cout << "Do you want to continue? y/n\n";
+		cin >> input;
+	}
 
-	system("pause");
 	return 0;
 }
 
@@ -210,6 +194,33 @@ bool RayCast(const Point* const origin, const Point* const direction, const Face
 }
 
 
+
+
+
+
+
+
+
+
+
+
+void RenderBoolBMPOutput(const Face* const triangle, const int resolutionX, const int resolutionY, const char* filename)
+{
+	vector<bool> values;
+	
+	for (int y = 0; y < resolutionX; ++y)
+	{
+		for (int x = 0; x < resolutionY; x++)
+		{
+			values.push_back(RayCast(new Point(0, y - resolutionY / 2, x - resolutionX / 2), new Point(1, 0, 0), triangle));
+		}
+	}
+
+
+	BMPWriter::WriteBoolMap(&values, resolutionX, resolutionY, filename);
+
+	cout << "\nRender complete\n";
+}
 
 
 
