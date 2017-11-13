@@ -24,17 +24,21 @@ using namespace std;
 /// </param>
 /// <returns>returns: true = the ray hits the triangle, false = the ray doesn't hit the triangle.</returns>  
 /// </summary>  
-bool RayCast(const Point* const origin, const Point* const direction , const Face* const triangle);
+float RayCast(const Point* const origin, const Point* const direction , const Face* const triangle);
 
 void RenderBoolBMPOutput(const Face* const triangle, const int resolutionX, const int resolutionY, const char* filename);
 
+void RenderFloatBMPOutput(const Face* const triangle, const int resolutionX, const int resolutionY, const char* filename);
+
+void RenderIntTextOutput(const std::vector<int> * const values, const int WIDTH, const int HEIGHT);
 
 int main()
 {
+	
 	cout << "Welcome to Renderjan!\n\n";
 	cout << "So far the system can only calculate whether a ray hits a triangle.\n\n";
 	char input;
-
+	/*
 	cout << "Do you want to continue? y/n\n";
 	cin >> input;
 
@@ -94,13 +98,52 @@ int main()
 
 		string filename = "C:\\Users\\Jan\\Desktop\\renderjan_test\\test.bmp";
 		
-		RenderBoolBMPOutput(&face, resolutionX, resolutionY, filename.c_str());
+		RenderFloatBMPOutput(&face, resolutionX, resolutionY, filename.c_str());
+		
 
-
-
+	}
 		cout << "Do you want to continue? y/n\n";
 		cin >> input;
+		
+		*/
+	/*
+	string filename = "C:\\Users\\Jan\\Desktop\\renderjan_test\\test.bmp";
+	int width = 100;
+	int height = 100;
+	
+	vector<bool>* values = new vector<bool>();
+	for (int w = 0; w < width; w++)
+	{
+		for (int h = 0; h < height; h++)
+		{
+			if (w % 2 == 0)
+				values->push_back(true);		//!! having width instead of w, might be important in other places too
+			else
+				values->push_back(false);
+		}
 	}
+	BMPWriter::WriteBoolMap(values,width,height,filename.c_str());
+	//RenderIntTextOutput(values, width, height);
+	*/
+
+
+	Point p0(1.0f, 30.0f, 0.0f);
+	Point p1(1.3f, -30.0f, 30.0f);
+	Point p2(1.5f, -30.0f, -30.0f);
+	Vertex v0(&p0);
+	Vertex v1(&p1);
+	Vertex v2(&p2);
+	Face face(&v0, &v1, &v2);
+	face.calculateNAndD();
+	int resolutionX = 100;
+	int resolutionY = 100;
+	string filename = "C:\\Users\\Jan\\Desktop\\renderjan_test\\test.bmp";
+
+	RenderFloatBMPOutput(&face, resolutionX, resolutionY, filename.c_str());
+
+
+
+	system("pause");
 
 	return 0;
 }
@@ -108,7 +151,7 @@ int main()
 
 
 
-bool RayCast(const Point* const origin, const Point* const direction, const Face* const triangle)
+float RayCast(const Point* const origin, const Point* const direction, const Face* const triangle)
 {
 	/*
 	The collision testing has to main steps:
@@ -187,10 +230,15 @@ bool RayCast(const Point* const origin, const Point* const direction, const Face
 		}
 	}
 
+	if (rayHitsTriangle)
+		cout << "Ray hits at distance " << t << endl;
+
 	delete C;
 	delete posHitPoint;
-
-	return rayHitsTriangle;
+	if (rayHitsTriangle)
+		return t;
+	else
+		return 0;
 }
 
 
@@ -206,18 +254,45 @@ bool RayCast(const Point* const origin, const Point* const direction, const Face
 
 void RenderBoolBMPOutput(const Face* const triangle, const int resolutionX, const int resolutionY, const char* filename)
 {
-	vector<bool> values;
+	vector<bool> values(resolutionX*resolutionY);
 	
-	for (int y = 0; y < resolutionX; ++y)
+	for (int y = resolutionY-1; y >=0 ; --y)
 	{
-		for (int x = 0; x < resolutionY; x++)
+		for (int x = 0; x < resolutionX; x++)
 		{
-			values.push_back(RayCast(new Point(0, y - resolutionY / 2, x - resolutionX / 2), new Point(1, 0, 0), triangle));
+			bool pixel = RayCast(new Point(0, y - resolutionY / 2, x - resolutionX / 2), new Point(1, 0, 0), triangle);
+			//values.push_back(pixel);
+			values[x + resolutionX*y] = pixel;
+			//if (pixel)
+			//	cout << pixel <<" at " << y << " " << x << endl;
 		}
 	}
 
 
 	BMPWriter::WriteBoolMap(&values, resolutionX, resolutionY, filename);
+
+	cout << "\nRender complete\n";
+}
+
+
+void RenderFloatBMPOutput(const Face* const triangle, const int resolutionX, const int resolutionY, const char* filename)
+{
+	vector<float> values(resolutionX*resolutionY);
+
+	for (int y = resolutionY - 1; y >= 0; --y)
+	{
+		for (int x = 0; x < resolutionX; x++)
+		{
+			float pixel = RayCast(new Point(0, y - resolutionY / 2, x - resolutionX / 2), new Point(1, 0, 0), triangle);
+			//values.push_back(pixel);
+			values[x + resolutionX*y] = pixel;
+			//if (pixel)
+				//cout << pixel <<" at " << y << " " << x << endl;
+		}
+	}
+
+
+	BMPWriter::WriteFloatMap(&values, resolutionX, resolutionY, filename);
 
 	cout << "\nRender complete\n";
 }
@@ -233,3 +308,35 @@ https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a
 Also reading:
 https://www.ics.uci.edu/~gopi/CS211B/RayTracing%20tutorial.pdf
 */
+
+
+
+
+void RenderIntTextOutput(const std::vector<int> * const values, const int WIDTH, const int HEIGHT)
+{
+	for (int x = 0; x < WIDTH; ++x)
+	{
+		cout << "-";
+	}
+	cout << endl;
+
+	for (int y = 0; y < HEIGHT; ++y)
+	{
+		cout << "|";
+		for (int x = 0; x < WIDTH; x++)
+		{
+			//if ((*values)[x*y])
+				cout << (*values)[x+WIDTH*y]<<" ";
+			//else
+				//cout << " ";
+		}
+		cout << "|\n";
+	}
+
+
+	for (int x = 0; x < WIDTH; ++x)
+	{
+		cout << "-";
+	}
+	cout << endl;
+}
