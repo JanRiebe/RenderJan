@@ -12,7 +12,7 @@ Face::Face(Vertex* v0, Vertex* v1, Vertex* v2)
 	vertices[2] = v2;
 	calculateNAndD();
 }
-
+/*
 void Face::calculateNormal()
 {
 	Point* A = Point::subtr((*vertices[1]).position, (*vertices[0]).position); // edge 0
@@ -34,7 +34,7 @@ void Face::calculateNormal()
 	B = nullptr;	// But I do it for practice.
 	newNormalPtr = nullptr;
 }
-
+*/
 
 void Face::calculateDistance()
 {
@@ -44,7 +44,7 @@ void Face::calculateDistance()
 
 void Face::calculateNAndD()
 {
-	calculateNormal();
+	//calculateNormal();
 	calculateDistance();
 }
 

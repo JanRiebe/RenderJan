@@ -10,22 +10,34 @@ Point::Point(float X, float Y, float Z) :
 {}
 
 
-Point* Point::mult(const Point* const p, float f)
+Point Point::operator*(float f)
 {
-	return new Point((*p).x*f, (*p).y*f, (*p).z*f);
+	return Point(x*f, y*f, z*f);
+}
+
+Point Point::operator/(double f)
+{
+	return Point(x/f, y/f, z/f);
 }
 
 
-Point* Point::add(const Point* const p1, const Point* const p2)
+Point Point::operator+(const Point const p2)
 {
-	return new Point((*p1).x + (*p2).x, (*p1).y + (*p2).y, (*p1).z + (*p2).z);
+	return Point(x + p2.x, y + p2.y, z + p2.z);
 }
 
 
-Point* Point::subtr(const Point* const p1, const Point* const p2)
+Point Point::operator-(const Point const p2)
 {
-	return new Point((*p1).x - (*p2).x, (*p1).y - (*p2).y, (*p1).z - (*p2).z);
+	return Point(x - p2.x, y - p2.y, z - p2.z);
 }
+
+
+Point Point::operator-()
+{
+	return Point(-x, -y, -z);
+}
+
 
 Point* Point::CrossProduct(const Point* const v1, const Point* const v2)
 {
@@ -47,10 +59,27 @@ void Point::Normalise(Point* const pointToBeChanged)
 	if ((*pointToBeChanged).x == 0 && (*pointToBeChanged).y == 0 && (*pointToBeChanged).z == 0)
 		throw std::exception("Can't normalise a Point that has no length.");
 
-	double length = sqrt(((*pointToBeChanged).x * (*pointToBeChanged).x) + 
-		((*pointToBeChanged).y * (*pointToBeChanged).y) + 
-		((*pointToBeChanged).z * (*pointToBeChanged).z));
-	(*pointToBeChanged).x /= length;
-	(*pointToBeChanged).y /= length;
-	(*pointToBeChanged).z /= length;
+	double length = CalculateLength(pointToBeChanged);
+	
+	pointToBeChanged->x /= length;
+	pointToBeChanged->y /= length;
+	pointToBeChanged->z /= length;
+}
+
+Point Point::Normalise()
+{
+	return *this / CalculateLength(this);
+}
+
+double Point::CalculateLength(Point* const p)
+{
+	return sqrt((p->x * p->x) +
+				(p->y * p->y) +
+				(p->z * p->z));
+}
+
+
+double Point::CalculateLength()
+{
+	return sqrt(x*x + y*y + z*z);
 }

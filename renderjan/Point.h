@@ -22,21 +22,24 @@ public:
 	/// <param name="f">f: The factor by which the values of p should be multiplied.</param>
 	/// <returns>returns: A pointer to a new Point object on the heap with the multiplied values.</returns>  
 	/// </summary>  
-	static Point* mult(const Point* p, float f);
+	Point operator*(float f);
+
+	Point operator/(double f);
 
 	/// <summary>Adds x, y, z of two points.
 	/// <param name="p1">p1: A pointer to the first Point which values should be used in the addition.</param>
 	/// <param name="p2">p2: A pointer to the second Point which values should be used in the addition.</param>
 	/// <returns>returns: A pointer to a new Point object on the heap with the added values.</returns>  
 	/// </summary>  
-	static Point* add(const Point* const p1, const Point* const p2);
+	Point operator+(const Point const p2);
 
 	/// <summary>Subtracts x, y, z of one point from those of another.
 	/// <param name="p1">p1: A pointer to the Point which holds the initial values.</param>
 	/// <param name="p2">p2: A pointer to the Point which holds the values that will be subtracted from p1.</param>
 	/// <returns>returns: A pointer to a new Point object on the heap with the subtracted values, p1-p2.</returns>  
 	/// </summary>  
-	static Point* subtr(const Point* const p1, const Point* const p2);
+	Point operator-(const Point const p2);
+	Point operator-();
 
 	/// <summary>Calculates the cross product of two points.
 	/// <param name="p1">p1: A pointer to a Point.</param>
@@ -57,8 +60,11 @@ public:
 	/// <exception>Throws exception if x, y, z of pointToBeChanged are all 0.</exception>
 	/// </summary>
 	static void Normalise(Point* const pointToBeChanged);
+	Point Normalise();
 #pragma endregion
 
+	static double CalculateLength(Point* const p);
+	double CalculateLength();
 
 	
 };
