@@ -28,3 +28,7 @@ int main(int argc, char* args[])
 }
 
 
+//TODO continue here
+// http://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/shading-spherical-light
+
+

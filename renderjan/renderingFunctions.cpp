@@ -20,8 +20,8 @@ void RenderTestScene()
 	spheres.push_back(Sphere{ Point(0.0f,0.0f,0.0f), 40.0f, Point(1.0f, 1.0f, 1.0f) });
 	spheres.push_back(Sphere{ Point(0.0f,10.0f,20.0f), 30.0f, Point(1.0f, 1.0f, 0.0f) });
 	spheres.push_back(Sphere{ Point(0.0f,-10.0f,-10.0f), 30.0f, Point(0.0f, 1.0f, 1.0f) });
-	spheres.push_back(Sphere{ Point(-30.0f,-20.0f,10.0f), 10.0f, Point(1.0f, 0.0f, 0.0f) });
-	spheres.push_back(Sphere{ Point(.0f,.0f,.0f), 500.0f, Point(0.18f, 0.18f, 0.18f) });
+	spheres.push_back(Sphere{ Point(-50.0f,-30.0f,20.0f), 10.0f, Point(1.0f, 0.0f, 0.0f) });
+	//spheres.push_back(Sphere{ Point(.0f,.0f,.0f), 500.0f, Point(0.18f, 0.18f, 0.18f) });
 
 
 	RenderViewer rendView;
@@ -58,18 +58,45 @@ void RenderPixelRenderViewer(vector<Sphere>* spheres, vector<LightSource>* light
 
 Light CastRay(Ray r, vector<Sphere>* objects, vector<LightSource>* lights)
 {
-	Light resultLight{ 0, 0, 0, 0 };
 	float closest = 100000.0f;
+	vector<Sphere>::iterator closestObject = objects->end();
+	Point closestPoint;
 	vector<Sphere>::iterator iter = objects->begin();
 	for (iter; iter != objects->end(); iter++)
 	{
-		Light l = iter->Intersection(r, lights);
-
-		if (l.z < closest && l.z > 0)
+		Point intersection;
+		float distance;
+		if (iter->Intersection(r, &intersection, &distance))
 		{
-			resultLight = l;
-			closest = l.z;
+			// If this ray hit something we test whether it is closer than all objects before.		 
+			if (distance < closest && distance > 0)
+			{
+				// Storing the values of the closest object.
+				closestObject = iter;
+				closestPoint = intersection;
+				closest = distance;
+			}
+		}
+		
+	}
+	// Calculating the light at the closest object.
+	if (closestObject != objects->end())
+		return closestObject->GetColorAtPoint(closestPoint, r, lights, objects);
+	else
+		return{ 0, 0, 0 };
+}
+
+// Casts a ray and returns whether it did not hit an object.
+// Returns true if no object was hit and false, if an object was hit.
+bool CastShadowRay(Ray r, vector<Sphere>* objects)
+{
+	vector<Sphere>::iterator iter = objects->begin();
+	for (iter; iter != objects->end(); iter++)
+	{
+		if (iter->Intersection(r))
+		{
+			return true;
 		}
 	}
-	return resultLight;
+	return false;
 }
