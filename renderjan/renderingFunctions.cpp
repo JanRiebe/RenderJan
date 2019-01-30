@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "renderingFunctions.h"
-#include "DataDefinitions.h"
 #include "Sphere.h"
 #include "RenderViewer.h"
+#include "MathFunctions.h"
 
 
 void RenderTestScene()
@@ -14,7 +14,7 @@ void RenderTestScene()
 	//lights.push_back(LightSource(Point(0.0f, 0.0f, -100.0f), Point(1.0f, 0.0f, 0.0f), 1.0f));
 	//lights.push_back(LightSource(Point(-100.0f, 100.0f, -100.0f), Point(0.0f, 1.0f, 0.0f), 1.0f));
 	//lights.push_back(LightSource(Point(-50.0f, -100.0f, -100.0f), Point(0.0f, 0.0f, 1.0f), 1.0f));
-	lights.push_back(LightSource(Point(100.0f, 100.0f, -100.0f), Point(1.0f, 1.0f, 1.0f), 1.0f));
+	lights.push_back(LightSource(Point(-65.0f, -45.0f, -35.0f), Point(1.0f, 1.0f, 1.0f), 30000.0f, false));
 
 	vector<Sphere> spheres;
 	spheres.push_back(Sphere{ Point(0.0f,0.0f,0.0f), 40.0f, Point(1.0f, 1.0f, 1.0f) });
@@ -81,13 +81,13 @@ Light CastRay(Ray r, vector<Sphere>* objects, vector<LightSource>* lights)
 	}
 	// Calculating the light at the closest object.
 	if (closestObject != objects->end())
-		return closestObject->GetColorAtPoint(closestPoint, r, lights, objects);
+		return CalculateOutgoingLightFromPointAtSurface(&(*closestObject), closestPoint, r, lights, objects);
 	else
 		return{ 0, 0, 0 };
 }
 
 // Casts a ray and returns whether it did not hit an object.
-// Returns true if no object was hit and false, if an object was hit.
+// Returns true if the lamp is visible.
 bool CastShadowRay(Ray r, vector<Sphere>* objects)
 {
 	vector<Sphere>::iterator iter = objects->begin();
@@ -95,8 +95,37 @@ bool CastShadowRay(Ray r, vector<Sphere>* objects)
 	{
 		if (iter->Intersection(r))
 		{
-			return true;
+			return false;
 		}
 	}
-	return false;
+	return true;
+}
+
+
+
+Light CalculateOutgoingLightFromPointAtSurface(Sphere* object, Point p, Ray viewRay, vector<LightSource>* lights, vector<Sphere>* objects)
+{
+	// Labertian with shadows
+	Light l = Light{ 0, 0, 0 };
+	vector<LightSource>::iterator lightSource = lights->begin();
+	for (lightSource; lightSource != lights->end(); lightSource++)
+	{
+		// Shadow ray
+		Point normal = object->GetNormalAtPoint(p);
+		Point pToLight = (lightSource->position - p);
+		if (CastShadowRay(Ray{ p + normal*shadowBias,  pToLight }, objects))
+		{
+			// If the shadow ray didn't hit any object, the light is visible.
+			// Lamberian				
+			Point viewingDirection = pToLight.GetUnitVector();
+			float facingRatio = std::max(0.0f, Point::DotProduct(&viewingDirection, &normal));
+			float intensityAfterFalloff = 1;
+			if(lightSource->isPoint) intensityAfterFalloff = InverseSquareFalloff(lightSource->intensity, pToLight.CalculateLength());
+			l.r += min(1.0f, max(0.0f, object->albedo.x * intensityAfterFalloff * facingRatio * lightSource->color.x));
+			l.g += min(1.0f, max(0.0f, object->albedo.y * intensityAfterFalloff * facingRatio * lightSource->color.y));
+			l.b += min(1.0f, max(0.0f, object->albedo.z * intensityAfterFalloff * facingRatio * lightSource->color.z));
+		}
+	}
+	return l;
+
 }

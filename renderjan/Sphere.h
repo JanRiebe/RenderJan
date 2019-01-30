@@ -69,7 +69,7 @@ struct Sphere
 		return normal;
 	}
 
-	//TODO put this outside of sphere, and take in sphere and call getNormal, getColor, getTexture
+	/*
 	Light GetColorAtPoint(Point p, Ray viewRay, vector<LightSource>* lights, vector<Sphere>* objects)
 	{
 		/*
@@ -84,6 +84,7 @@ struct Sphere
 		float facingRatio = std::max(0.0f, Point::DotProduct(&normal, &viewingDirection));
 		return Light{ facingRatio, facingRatio, facingRatio, -1 };
 		*/
+	/*
 
 		// Labertian with shadows
 		Light l = Light{ 0, 0, 0 };
@@ -99,15 +100,16 @@ struct Sphere
 				// Lamberian				
 				Point viewingDirection = pToLight.Normalise();
 				float facingRatio = std::max(0.0f, Point::DotProduct(&normal, &viewingDirection));
-				l.r += max(0.0, albedo.x / PI * lightSource->intensity * facingRatio * lightSource->color.x);
-				l.g += max(0.0, albedo.y / PI * lightSource->intensity * facingRatio * lightSource->color.y);
-				l.b += max(0.0, albedo.z / PI *lightSource->intensity * facingRatio * lightSource->color.z);
+				float intensityAfterFalloff = InverseSquareFalloff(lightSource->intensity, pToLight.CalculateLength());
+				l.r += max(0.0, albedo.x / PI * intensityAfterFalloff * facingRatio * lightSource->color.x);
+				l.g += max(0.0, albedo.y / PI * intensityAfterFalloff * facingRatio * lightSource->color.y);
+				l.b += max(0.0, albedo.z / PI * intensityAfterFalloff * facingRatio * lightSource->color.z);
 			}
 		}
 		return l;
 
 	}
-
+*/
 
 };
 

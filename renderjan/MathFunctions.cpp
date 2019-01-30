@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include <vector>
+#include "DataDefinitions.h"
 
 //From: https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
 bool solveQuadratic(const float &a, const float &b, const float &c, float &x0, float &x1)
@@ -19,4 +20,10 @@ bool solveQuadratic(const float &a, const float &b, const float &c, float &x0, f
 	if (x0 > x1) std::swap(x0, x1);
 
 	return true;
+}
+
+
+double InverseSquareFalloff(double intensity, double distance)
+{
+	return intensity / (4 * PI * distance*distance);
 }

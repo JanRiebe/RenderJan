@@ -15,6 +15,7 @@ Point Point::operator*(float f)
 	return Point(x*f, y*f, z*f);
 }
 
+
 Point Point::operator/(double f)
 {
 	return Point(x/f, y/f, z/f);
@@ -66,9 +67,10 @@ void Point::Normalise(Point* const pointToBeChanged)
 	pointToBeChanged->z /= length;
 }
 
-Point Point::Normalise()
+Point Point::GetUnitVector()
 {
-	return *this / CalculateLength(this);
+	double len = CalculateLength(this);
+	return{ this->x / (float)len, this->y / (float)len,this->z / (float)len };
 }
 
 double Point::CalculateLength(Point* const p)

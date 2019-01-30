@@ -60,7 +60,7 @@ public:
 	/// <exception>Throws exception if x, y, z of pointToBeChanged are all 0.</exception>
 	/// </summary>
 	static void Normalise(Point* const pointToBeChanged);
-	Point Normalise();
+	Point GetUnitVector();
 #pragma endregion
 
 	static double CalculateLength(Point* const p);
