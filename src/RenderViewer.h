@@ -1,13 +1,17 @@
 #pragma once
-#include "Image.h"
+
 
 //Using SDL and standard IO
 #include <stdio.h>
 #include <SDL.h>
 
+#include "Image.h"
+#include "renderingFunctions.h"
+
 using namespace std;
 
 
+struct Scene;
 
 
 class RenderViewer
@@ -21,16 +25,17 @@ private:
 	//Screen dimension constants
 	const int SCREEN_WIDTH = 640;
 	const int SCREEN_HEIGHT = 480;
-	
-	//The window we'll be rendering to 
+
+	//The window we'll be rendering to
 	SDL_Window* gWindow = nullptr;
-	//The window renderer 
+	//The window renderer
 	//SDL_Renderer* gRenderer = nullptr;
 	//The surface contained by the window
 	SDL_Surface* gScreenSurface = nullptr;
 
 	SDL_Surface* displaySurface = nullptr;
 
+	void RenderTestScene();
 
 public:
 	RenderViewer();

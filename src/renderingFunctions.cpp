@@ -2,47 +2,24 @@
 #include "Sphere.h"
 #include "RenderViewer.h"
 #include "MathFunctions.h"
+#include "Scene.h"
+#include "Image.h"
 
-
-void RenderTestScene()
-{
-	int resolutionX = 500;
-	int resolutionY = 300;
-
-	vector<LightSource> lights;
-	//lights.push_back(LightSource(Point(0.0f, 0.0f, -100.0f), Point(1.0f, 0.0f, 0.0f), 1.0f));
-	//lights.push_back(LightSource(Point(-100.0f, 100.0f, -100.0f), Point(0.0f, 1.0f, 0.0f), 1.0f));
-	//lights.push_back(LightSource(Point(-50.0f, -100.0f, -100.0f), Point(0.0f, 0.0f, 1.0f), 1.0f));
-	lights.push_back(LightSource(Point(-65.0f, -45.0f, -35.0f), Point(1.0f, 1.0f, 1.0f), 30000.0f, false));
-
-	vector<Sphere> spheres;
-	spheres.push_back(Sphere{ Point(0.0f,0.0f,0.0f), 40.0f, Point(1.0f, 1.0f, 1.0f) });
-	spheres.push_back(Sphere{ Point(0.0f,10.0f,20.0f), 30.0f, Point(1.0f, 1.0f, 0.0f) });
-	spheres.push_back(Sphere{ Point(0.0f,-10.0f,-10.0f), 30.0f, Point(0.0f, 1.0f, 1.0f) });
-	spheres.push_back(Sphere{ Point(-50.0f,-30.0f,20.0f), 10.0f, Point(1.0f, 0.0f, 0.0f) });
-	//spheres.push_back(Sphere{ Point(.0f,.0f,.0f), 500.0f, Point(0.18f, 0.18f, 0.18f) });
-
-
-	RenderViewer rendView;
-	RenderPixelRenderViewer(&spheres, &lights, resolutionX, resolutionY, &rendView);
-
-}
-
-
-
-
-
-void RenderPixelRenderViewer(vector<Sphere>* spheres, vector<LightSource>* lights, const int resolutionX, const int resolutionY, RenderViewer* renderViewer)
+/*
+Renders the scene and returns a pointer to the rendered image.
+The caller gets ownership of the returned pointer.
+*/
+Image* RenderScene(Scene* scene, int width, int height)
 {
 	Image* img = new Image();
-	Pixel* pix = new Pixel[resolutionX*resolutionY];
+	Pixel* pix = new Pixel[width*height];
 
-	for (int y = resolutionY - 1; y >= 0; --y)
+	for (int y = height - 1; y >= 0; --y)
 	{
-		for (int x = 0; x < resolutionX; x++)
+		for (int x = 0; x < width; x++)
 		{
-			Pixel* p = &pix[y*resolutionX + x];
-			Light l = CastRay(Ray{ Point(-100, y - resolutionY / 2, x - resolutionX / 2), Point(1, 0, 0) }, spheres, lights);
+			Pixel* p = &pix[y*width + x];
+			Light l = CastRay(Ray{ Point(-100, y - height / 2, x - width / 2), Point(1, 0, 0) }, &(scene->spheres), &(scene->lights));
 			p->r = l.r;
 			p->g = l.g;
 			p->b = l.b;
@@ -50,9 +27,13 @@ void RenderPixelRenderViewer(vector<Sphere>* spheres, vector<LightSource>* light
 		}
 	}
 
-	img->setPixel(pix, resolutionX, resolutionY);
-	renderViewer->Show(img);
+	img->setPixel(pix, width, height);
+	return img;
 }
+
+
+
+
 
 
 Light CastRay(Ray r, vector<Sphere>* objects, vector<LightSource>* lights)

@@ -8,8 +8,8 @@
 using namespace std;
 
 class RenderViewer;
-
-void RenderTestScene();
+class Scene;
+class Image;
 
 void RenderPixelRenderViewer(vector<Sphere>* spheres, vector<LightSource>* lights, const int resolutionX, const int resolutionY, RenderViewer* renderViewer);
 
@@ -21,3 +21,5 @@ bool CastShadowRay(Ray r, vector<Sphere>* objects);
 
 
 Light CalculateOutgoingLightFromPointAtSurface(Sphere* object, Point p, Ray viewRay, vector<LightSource>* lights, vector<Sphere>* objects);
+
+Image* RenderScene(Scene* scene, int width, int height);

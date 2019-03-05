@@ -1,7 +1,6 @@
 #include "RenderViewer.h"
 #include <string>
-#include "renderingFunctions.h"
-
+#include "Scene.h"
 
 
 
@@ -9,7 +8,7 @@
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
-//The window we'll be rendering to 
+//The window we'll be rendering to
 SDL_Window* gWindow = nullptr;
 
 
@@ -21,7 +20,7 @@ Starts a loop to listen to system input events for handling window closing.
 */
 RenderViewer::RenderViewer()
 {
-	//Start up SDL and create window 
+	//Start up SDL and create window
 	if (!Init())
 	{
 		printf("Failed to initialize!\n");
@@ -29,6 +28,7 @@ RenderViewer::RenderViewer()
 	else
 	{
 		//EventLoop();
+		RenderTestScene();
 	}
 }
 
@@ -61,7 +61,7 @@ void RenderViewer::Show(Image* img)
 	// Setting up the surface.
 	SDL_FreeSurface(displaySurface);
 	displaySurface = SDL_CreateRGBSurface(0, img->getWidth(), img->getHeight(), 32, 0, 0, 0, 0);
-	
+
 	// Writing the image data into the surface.
 	for (int x = 0; x < img->getWidth(); x++)
 	{
@@ -104,28 +104,30 @@ void RenderViewer::Render()
 
 void RenderViewer::EventLoop()
 {
-	//Main loop flag 
+	//Main loop flag
 	bool quit = false;
-	//Event handler 
+	//Event handler
 	SDL_Event e;
 
-	//While application is running 
+	//While application is running
 	while (!quit) {
 
-		//Handle events on queue 
+		//Handle events on queue
 		while (SDL_PollEvent(&e) != 0) // polls an event from the event queue and puts it into e (the union we created before)
 		{
-			//User requests quit 
+			//User requests quit
 			if (e.type == SDL_QUIT)
 			{
 				quit = true;
 			}
+			/*
 			else if (e.type == SDL_KEYUP)
 			{
 				if (e.key.keysym.sym == SDLK_r)
 					RenderTestScene();
 				quit = true;
 			}
+			*/
 		}
 	}
 }
@@ -135,9 +137,9 @@ void RenderViewer::EventLoop()
 
 bool RenderViewer::Init()
 {
-	//Initialization flag 
+	//Initialization flag
 	bool success = true;
-	//Initialize SDL 
+	//Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) < 0)
 	{
 		printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
@@ -145,7 +147,7 @@ bool RenderViewer::Init()
 	}
 	else
 	{
-		//Create window 
+		//Create window
 		gWindow = SDL_CreateWindow("Renderjan", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if (gWindow == NULL)
 		{
@@ -165,6 +167,30 @@ bool RenderViewer::Init()
 
 
 
+void RenderViewer::RenderTestScene()
+{
+	int resolutionX = 500;
+	int resolutionY = 300;
+
+	Scene scene;
+
+	//lights.push_back(LightSource(Point(0.0f, 0.0f, -100.0f), Point(1.0f, 0.0f, 0.0f), 1.0f));
+	//lights.push_back(LightSource(Point(-100.0f, 100.0f, -100.0f), Point(0.0f, 1.0f, 0.0f), 1.0f));
+	//lights.push_back(LightSource(Point(-50.0f, -100.0f, -100.0f), Point(0.0f, 0.0f, 1.0f), 1.0f));
+	scene.lights.push_back(LightSource(Point(-65.0f, -45.0f, -35.0f), Point(1.0f, 1.0f, 1.0f), 30000.0f, false));
+
+	scene.spheres.push_back(Sphere{ Point(0.0f,0.0f,0.0f), 40.0f, Point(1.0f, 1.0f, 1.0f) });
+	scene.spheres.push_back(Sphere{ Point(0.0f,10.0f,20.0f), 30.0f, Point(1.0f, 1.0f, 0.0f) });
+	scene.spheres.push_back(Sphere{ Point(0.0f,-10.0f,-10.0f), 30.0f, Point(0.0f, 1.0f, 1.0f) });
+	scene.spheres.push_back(Sphere{ Point(-50.0f,-30.0f,20.0f), 10.0f, Point(1.0f, 0.0f, 0.0f) });
+	//spheres.push_back(Sphere{ Point(.0f,.0f,.0f), 500.0f, Point(0.18f, 0.18f, 0.18f) });
+
+	Image* img = RenderScene(&scene,resolutionX, resolutionY);
+	Show(img);
+
+}
+
+
 
 
 void RenderViewer::Close()
@@ -175,7 +201,7 @@ void RenderViewer::Close()
 	SDL_FreeSurface(displaySurface);
 	displaySurface = NULL;
 
-	//Destroy window 
+	//Destroy window
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;
 
@@ -184,5 +210,3 @@ void RenderViewer::Close()
 
 	printf("RenderViewer closed.\n");
 }
-
-
