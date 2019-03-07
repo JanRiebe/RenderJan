@@ -27,8 +27,8 @@ RenderViewer::RenderViewer()
 	}
 	else
 	{
-		//EventLoop();
 		RenderTestScene();
+		EventLoop();
 	}
 }
 
@@ -120,14 +120,14 @@ void RenderViewer::EventLoop()
 			{
 				quit = true;
 			}
-			/*
+
 			else if (e.type == SDL_KEYUP)
 			{
-				if (e.key.keysym.sym == SDLK_r)
+				if (e.key.keysym.sym == SDLK_RETURN)
 					RenderTestScene();
 				quit = true;
 			}
-			*/
+
 		}
 	}
 }
@@ -188,6 +188,8 @@ void RenderViewer::RenderTestScene()
 	Image* img = RenderScene(&scene,resolutionX, resolutionY);
 	Show(img);
 
+	// The image can now be deleted, since its values have been copied to the displaySurface in Show.
+	delete img;
 }
 
 
