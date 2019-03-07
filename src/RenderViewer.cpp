@@ -4,12 +4,13 @@
 
 
 
-//Screen dimension constants
+// Screen dimension constants
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
-//The window we'll be rendering to
+// The window we'll be rendering to
 SDL_Window* gWindow = nullptr;
+//TODO can this be removed, since it is already mentioned in the header?
 
 
 
@@ -27,7 +28,9 @@ RenderViewer::RenderViewer()
 	}
 	else
 	{
-		RenderTestScene();
+		scene = new Scene();
+		SetupTestScene();
+		Render();
 		EventLoop();
 	}
 }
@@ -88,19 +91,12 @@ void RenderViewer::Show(Image* img)
 		}
 	}
 
-	Render();
-
-	printf( "\nRender complete.\nClose window to continue program.\n");
-	// Keep the window open until closed and thus the program running but paused.
-	EventLoop();
-}
-
-
-void RenderViewer::Render()
-{
 	SDL_BlitSurface(displaySurface, NULL, gScreenSurface, NULL);
 	SDL_UpdateWindowSurface(gWindow);
+
 }
+
+
 
 void RenderViewer::EventLoop()
 {
@@ -124,8 +120,7 @@ void RenderViewer::EventLoop()
 			else if (e.type == SDL_KEYUP)
 			{
 				if (e.key.keysym.sym == SDLK_RETURN)
-					RenderTestScene();
-				quit = true;
+					Render();
 			}
 
 		}
@@ -161,53 +156,62 @@ bool RenderViewer::Init()
 
 		}
 	}
+
+
 	printf("Successfully initialised RenderViewer.");
 	return success;
 }
 
 
 
-void RenderViewer::RenderTestScene()
+void RenderViewer::SetupTestScene()
 {
-	int resolutionX = 500;
-	int resolutionY = 300;
-
-	Scene scene;
-
 	//lights.push_back(LightSource(Point(0.0f, 0.0f, -100.0f), Point(1.0f, 0.0f, 0.0f), 1.0f));
 	//lights.push_back(LightSource(Point(-100.0f, 100.0f, -100.0f), Point(0.0f, 1.0f, 0.0f), 1.0f));
 	//lights.push_back(LightSource(Point(-50.0f, -100.0f, -100.0f), Point(0.0f, 0.0f, 1.0f), 1.0f));
-	scene.lights.push_back(LightSource(Point(-65.0f, -45.0f, -35.0f), Point(1.0f, 1.0f, 1.0f), 30000.0f, false));
+	scene->lights.push_back(LightSource(Point(-65.0f, -45.0f, -35.0f), Point(1.0f, 1.0f, 1.0f), 30000.0f, false));
 
-	scene.spheres.push_back(Sphere{ Point(0.0f,0.0f,0.0f), 40.0f, Point(1.0f, 1.0f, 1.0f) });
-	scene.spheres.push_back(Sphere{ Point(0.0f,10.0f,20.0f), 30.0f, Point(1.0f, 1.0f, 0.0f) });
-	scene.spheres.push_back(Sphere{ Point(0.0f,-10.0f,-10.0f), 30.0f, Point(0.0f, 1.0f, 1.0f) });
-	scene.spheres.push_back(Sphere{ Point(-50.0f,-30.0f,20.0f), 10.0f, Point(1.0f, 0.0f, 0.0f) });
+	scene->spheres.push_back(Sphere{ Point(0.0f,0.0f,0.0f), 40.0f, Point(1.0f, 1.0f, 1.0f) });
+	scene->spheres.push_back(Sphere{ Point(0.0f,10.0f,20.0f), 30.0f, Point(1.0f, 1.0f, 0.0f) });
+	scene->spheres.push_back(Sphere{ Point(0.0f,-10.0f,-10.0f), 30.0f, Point(0.0f, 1.0f, 1.0f) });
+	scene->spheres.push_back(Sphere{ Point(-50.0f,-30.0f,20.0f), 10.0f, Point(1.0f, 0.0f, 0.0f) });
 	//spheres.push_back(Sphere{ Point(.0f,.0f,.0f), 500.0f, Point(0.18f, 0.18f, 0.18f) });
 
-	Image* img = RenderScene(&scene,resolutionX, resolutionY);
+}
+
+
+void RenderViewer::Render()
+{
+	// Rendering the scene into an image.
+	Image* img = RenderScene(scene,SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	// Displaying the image on the window.
 	Show(img);
 
 	// The image can now be deleted, since its values have been copied to the displaySurface in Show.
 	delete img;
-}
 
+	printf( "\nRender complete.\nClose window to continue program.\n");
+}
 
 
 
 void RenderViewer::Close()
 {
-	//Deallocate surface
+	// Deallocate scene
+	delete scene;
+
+	// Deallocate surface
 	SDL_FreeSurface(gScreenSurface);
 	gScreenSurface = NULL;
 	SDL_FreeSurface(displaySurface);
 	displaySurface = NULL;
 
-	//Destroy window
+	// Destroy window
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;
 
-	//Quit SDL subsystems
+	// Quit SDL subsystems
 	SDL_Quit();
 
 	printf("RenderViewer closed.\n");

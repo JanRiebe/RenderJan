@@ -19,7 +19,6 @@ class RenderViewer
 private:
 	bool Init();
 	void Close();
-	void Render();
 	void EventLoop();
 
 	//Screen dimension constants
@@ -35,7 +34,11 @@ private:
 
 	SDL_Surface* displaySurface = nullptr;
 
-	void RenderTestScene();
+	// The scene that we render.
+	Scene* scene = nullptr;
+
+	void SetupTestScene();
+	void Render();
 
 public:
 	RenderViewer();
