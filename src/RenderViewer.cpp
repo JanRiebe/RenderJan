@@ -220,8 +220,15 @@ void RenderViewer::SetupTestScene()
 
 void RenderViewer::Render()
 {
+	// Setting the start time to calculate how long the render took.
+	unsigned int startTime = SDL_GetTicks();
+
+
 	// Rendering the scene into an image.
 	Image* img = RenderScene(scene,SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	// Calsulating the time it took to render.
+	int timeTook = SDL_GetTicks() - startTime;
 
 	// Displaying the image on the window.
 	Show(img);
@@ -229,7 +236,7 @@ void RenderViewer::Render()
 	// The image can now be deleted, since its values have been copied to the displaySurface in Show.
 	delete img;
 
-	printf( "\nRender complete.\nClose window to continue program.\n");
+	printf("\nRender complete in %d ticks.\nClose window to continue program.\n", timeTook);
 }
 
 
