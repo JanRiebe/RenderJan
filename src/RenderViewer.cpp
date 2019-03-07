@@ -119,10 +119,48 @@ void RenderViewer::EventLoop()
 
 			else if (e.type == SDL_KEYUP)
 			{
-				if (e.key.keysym.sym == SDLK_RETURN)
-					Render();
+				switch (e.key.keysym.sym)
+				{
+					case SDLK_RETURN:
+						Render();
+						break;
+					case SDLK_s:
+						; // TODO add sphere
+						break;
+					case SDLK_l:
+						; // TODO add light
+						break;
+					case SDLK_DELETE:
+						; // TODO delete selected light or sphere
+						break;
+					case SDLK_PLUS:
+						; // TODO make selected light or sphere bigger
+						break;
+					case SDLK_MINUS:
+						; // TODO make selected light or sphere smaller
+						break;
+					case SDLK_UP:
+						; // TODO move selected light or sphere in y axis
+						break;
+					case SDLK_DOWN:
+						; // TODO move selected light or sphere in y axis
+						break;
+					case SDLK_LEFT:
+						; // TODO move selected light or sphere in x axis
+						break;
+					case SDLK_RIGHT:
+						; // TODO move selected light or sphere in x axis
+						break;
+					case SDLK_z:
+						; // TODO move selected light or sphere in z axis
+						break;
+					case SDLK_h:
+						; // TODO move selected light or sphere in z axis
+						break;
+					default:
+						break;
+					}
 			}
-
 		}
 	}
 }
