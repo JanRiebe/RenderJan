@@ -1,12 +1,10 @@
 #pragma once
 #include "Point.h"
+#include "SceneElement.h"
 
-class LightSource
+struct LightSource : SceneElement
 {
 public:
-	Point position;
-	Point color;
-	float intensity;
 	bool isPoint;	//else directional
 
 	LightSource(const Point pos, const Point color, const float intensity, const bool isPoint);
@@ -19,4 +17,3 @@ public:
 	void LightSource::GetDirectionAndIntensity(const Point* P, Point* lightDir, Point* lightIntensity);
 	*/
 };
-

@@ -105,6 +105,8 @@ void RenderViewer::EventLoop()
 	//Event handler
 	SDL_Event e;
 
+
+
 	//While application is running
 	while (!quit) {
 
@@ -125,10 +127,23 @@ void RenderViewer::EventLoop()
 						Render();
 						break;
 					case SDLK_s:
-						; // TODO add sphere
+						//add sphere
+						scene->spheres.push_back(
+							Sphere(
+								Point(0.0f,0.0f,0.0f),			// position
+								40.0f,											// radius
+								Point(1.0f, 1.0f, 1.0f)			// color
+							));
 						break;
 					case SDLK_l:
-						; // TODO add light
+						// add light
+						scene->lights.push_back(
+							LightSource(
+								Point(-65.0f, -45.0f, -35.0f),	// position
+								Point(1.0f, 1.0f, 1.0f),				// color
+								30000.0f,												// intensity
+								false														// is point light
+							));
 						break;
 					case SDLK_DELETE:
 						; // TODO delete selected light or sphere
@@ -204,6 +219,7 @@ bool RenderViewer::Init()
 
 void RenderViewer::SetupTestScene()
 {
+	/*
 	//lights.push_back(LightSource(Point(0.0f, 0.0f, -100.0f), Point(1.0f, 0.0f, 0.0f), 1.0f));
 	//lights.push_back(LightSource(Point(-100.0f, 100.0f, -100.0f), Point(0.0f, 1.0f, 0.0f), 1.0f));
 	//lights.push_back(LightSource(Point(-50.0f, -100.0f, -100.0f), Point(0.0f, 0.0f, 1.0f), 1.0f));
@@ -214,7 +230,7 @@ void RenderViewer::SetupTestScene()
 	scene->spheres.push_back(Sphere{ Point(0.0f,-10.0f,-10.0f), 30.0f, Point(0.0f, 1.0f, 1.0f) });
 	scene->spheres.push_back(Sphere{ Point(-50.0f,-30.0f,20.0f), 10.0f, Point(1.0f, 0.0f, 0.0f) });
 	//spheres.push_back(Sphere{ Point(.0f,.0f,.0f), 500.0f, Point(0.18f, 0.18f, 0.18f) });
-
+*/
 }
 
 

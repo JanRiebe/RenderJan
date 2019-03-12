@@ -1,19 +1,15 @@
 #pragma once
 
 #include "DataDefinitions.h"
+#include "SceneElement.h"
 
 class Point;
 class Ray;
 
-struct Sphere
+struct Sphere : SceneElement
 {
 
-	Point position;
-
-	float radius;
-
-	Point albedo;
-
+	Sphere(Point pos, float scale, Point color);
 
 	bool Intersection(Ray* r, Point* outPointOfIntersection = nullptr, float* outDistance = nullptr);
 

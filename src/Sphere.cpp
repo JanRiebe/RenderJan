@@ -8,6 +8,9 @@
 #include <iostream>
 using namespace std;
 
+
+Sphere::Sphere(Point pos, float scale, Point color):SceneElement(pos, scale, color){};
+
 bool Sphere::Intersection(Ray* r, Point* outPointOfIntersection, float* outDistance)
 {
   // Step 1: finding the position of the hit point, posHitPoint
@@ -19,7 +22,7 @@ bool Sphere::Intersection(Ray* r, Point* outPointOfIntersection, float* outDista
   Point L = r->origin - position;
   float a = Point::DotProduct(&(r->direction), &(r->direction));
   float b = 2 * Point::DotProduct(&(r->direction), &L);
-  float c = Point::DotProduct(&L, &L) - radius*radius;
+  float c = Point::DotProduct(&L, &L) - scale*scale;
   if (!solveQuadratic(a, b, c, t0, t1)) return false;	// No solution found. No hit.
 
   if (t0 > t1) std::swap(t0, t1);

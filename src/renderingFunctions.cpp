@@ -100,10 +100,10 @@ Light CalculateOutgoingLightFromPointAtSurface(Sphere* object, Point p, Ray view
 			Point viewingDirection = pToLight.GetUnitVector();
 			float facingRatio = std::max(0.0f, Point::DotProduct(&viewingDirection, &normal));
 			float intensityAfterFalloff = 1;
-			if(lightSource->isPoint) intensityAfterFalloff = InverseSquareFalloff(lightSource->intensity, pToLight.CalculateLength());
-			l.r += min(1.0f, max(0.0f, object->albedo.x * intensityAfterFalloff * facingRatio * lightSource->color.x));
-			l.g += min(1.0f, max(0.0f, object->albedo.y * intensityAfterFalloff * facingRatio * lightSource->color.y));
-			l.b += min(1.0f, max(0.0f, object->albedo.z * intensityAfterFalloff * facingRatio * lightSource->color.z));
+			if(lightSource->isPoint) intensityAfterFalloff = InverseSquareFalloff(lightSource->scale, pToLight.CalculateLength());
+			l.r += min(1.0f, max(0.0f, object->color.x * intensityAfterFalloff * facingRatio * lightSource->color.x));
+			l.g += min(1.0f, max(0.0f, object->color.y * intensityAfterFalloff * facingRatio * lightSource->color.y));
+			l.b += min(1.0f, max(0.0f, object->color.z * intensityAfterFalloff * facingRatio * lightSource->color.z));
 		}
 	}
 	return l;
