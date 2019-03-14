@@ -63,7 +63,7 @@ Light CastRay(Ray r, vector<Sphere>* objects, vector<LightSource>* lights)
 	if (closestObject != objects->end())
 		return CalculateOutgoingLightFromPointAtSurface(&(*closestObject), closestPoint, r, lights, objects);
 	else
-		return{ 0, 0, 0 };
+		return{ 1, 0, 0 };
 }
 
 // Casts a ray and returns whether it did not hit an object.

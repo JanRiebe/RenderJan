@@ -105,7 +105,7 @@ void RenderViewer::EventLoop()
 	//Event handler
 	SDL_Event e;
 
-
+	SceneElement* selected = nullptr;
 
 	//While application is running
 	while (!quit) {
@@ -134,6 +134,8 @@ void RenderViewer::EventLoop()
 								40.0f,											// radius
 								Point(1.0f, 1.0f, 1.0f)			// color
 							));
+						// Setting the just created SceneElement as the currently selected one.
+						selected = &(scene->spheres.back());
 						break;
 					case SDLK_l:
 						// add light
@@ -144,39 +146,75 @@ void RenderViewer::EventLoop()
 								30000.0f,												// intensity
 								false														// is point light
 							));
+						// Setting the just created SceneElement as the currently selected one.
+						selected = &(scene->lights.back());
 						break;
 					case SDLK_DELETE:
-						; // TODO delete selected light or sphere
+						// TODO delete selected light or sphere
 						break;
 					case SDLK_PLUS:
-						; // TODO make selected light or sphere bigger
+						// make selected light or sphere bigger
+						if(selected)
+						{
+							selected->scale *= 2.0f;
+						}
 						break;
 					case SDLK_MINUS:
-						; // TODO make selected light or sphere smaller
+						// make selected light or sphere smaller
+						if(selected)
+						{
+							selected->scale *= 0.5f;
+						}
 						break;
 					case SDLK_UP:
-						; // TODO move selected light or sphere in y axis
+						// move selected light or sphere in y axis
+						if(selected)
+						{
+							selected->position.y++;
+						}
 						break;
 					case SDLK_DOWN:
-						; // TODO move selected light or sphere in y axis
+						//move selected light or sphere in y axis
+						if(selected)
+						{
+							selected->position.y--;
+						}
 						break;
 					case SDLK_LEFT:
-						; // TODO move selected light or sphere in x axis
+						//move selected light or sphere in x axis
+						if(selected)
+						{
+							selected->position.x++;
+						}
 						break;
 					case SDLK_RIGHT:
-						; // TODO move selected light or sphere in x axis
+						// move selected light or sphere in x axis
+						if(selected)
+						{
+							selected->position.x--;
+						}
 						break;
 					case SDLK_z:
-						; // TODO move selected light or sphere in z axis
+						// move selected light or sphere in z axis
+						if(selected)
+						{
+							selected->position.z++;
+						}
 						break;
 					case SDLK_h:
-						; // TODO move selected light or sphere in z axis
+						// move selected light or sphere in z axis
+						if(selected)
+						{
+							selected->position.z--;
+						}
 						break;
 					default:
 						break;
 					}
+					Render();
 			}
 		}
+		SDL_UpdateWindowSurface(gWindow);
 	}
 }
 
@@ -236,9 +274,11 @@ void RenderViewer::SetupTestScene()
 
 void RenderViewer::Render()
 {
+
+	printf("\nRendering scene with %d spheres and %d lights.\n", (int)scene->spheres.size(), (int)scene->lights.size());
+
 	// Setting the start time to calculate how long the render took.
 	unsigned int startTime = SDL_GetTicks();
-
 
 	// Rendering the scene into an image.
 	Image* img = RenderScene(scene,SCREEN_WIDTH, SCREEN_HEIGHT);
