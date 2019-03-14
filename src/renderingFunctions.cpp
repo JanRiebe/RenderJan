@@ -36,7 +36,7 @@ Image* RenderScene(Scene* scene, int width, int height)
 
 
 
-Light CastRay(Ray r, vector<Sphere>* objects, vector<LightSource>* lights)
+Light CastRay(Ray r, vector<Sphere>* objects, vector<LightSource>* lights, int recutsionDepth)
 {
 	float closest = 100000.0f;
 	vector<Sphere>::iterator closestObject = objects->end();
@@ -61,7 +61,7 @@ Light CastRay(Ray r, vector<Sphere>* objects, vector<LightSource>* lights)
 	}
 	// Calculating the light at the closest object.
 	if (closestObject != objects->end())
-		return CalculateOutgoingLightFromPointAtSurface(&(*closestObject), closestPoint, r, lights, objects);
+		return CalculateOutgoingLightFromPointAtSurface(&(*closestObject), closestPoint, r, lights, objects, ++recutsionDepth);
 	else
 		return{ 1, 0, 0 };
 }
@@ -83,15 +83,17 @@ bool CastShadowRay(Ray r, vector<Sphere>* objects)
 
 
 
-Light CalculateOutgoingLightFromPointAtSurface(Sphere* object, Point p, Ray viewRay, vector<LightSource>* lights, vector<Sphere>* objects)
+Light CalculateOutgoingLightFromPointAtSurface(Sphere* object, Point p, Ray viewRay, vector<LightSource>* lights, vector<Sphere>* objects, int recutsionDepth)
 {
-	// Labertian with shadows
 	Light l = Light{ 0, 0, 0 };
+
+	Point normal = object->GetNormalAtPoint(&p);
+
+		// Labertian with shadows
 	vector<LightSource>::iterator lightSource = lights->begin();
 	for (lightSource; lightSource != lights->end(); lightSource++)
 	{
 		// Shadow ray
-		Point normal = object->GetNormalAtPoint(&p);
 		Point pToLight = (lightSource->position - p);
 		if (CastShadowRay(Ray{ p + normal*shadowBias,  pToLight }, objects))
 		{
@@ -106,6 +108,21 @@ Light CalculateOutgoingLightFromPointAtSurface(Sphere* object, Point p, Ray view
 			l.b += min(1.0f, max(0.0f, object->color.z * intensityAfterFalloff * facingRatio * lightSource->color.z));
 		}
 	}
-	return l;
 
+	// Reflection
+	if(recutsionDepth < maxRecursionDepth)
+	{
+		Light reflection = CastReflectionRay(&viewRay, &p, &normal, lights, objects, recutsionDepth);
+		l += reflection;
+	}
+
+	return l;
+}
+
+
+Light CastReflectionRay(Ray* incommingRay, Point* reflectionPosition, Point* surfaceNormal,, vector<LightSource>* lights, vector<Sphere>* objects, , int recutsionDepth)
+{
+	Point reflectionDirection = incommingRay->direction - 2*Point::DotProduct(surfaceNormal, incommingRay->direction)*surfaceNormal;
+	Ray reflectionRay = {*reflectionPosition, reflectionDirection};
+	return CastRay(reflectionRay, objects, lights, maxRecursionDepth);
 }
