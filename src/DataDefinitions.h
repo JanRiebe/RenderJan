@@ -11,9 +11,11 @@ struct Light
 {
 	float r, g, b;
 	Light(float r, float g, float b):r(r),g(g),b(b){};
-	Light operator+(const Light l2)
+	void operator+=(const Light l2)
 	{
-		return Light(r + l2.r, g + l2.g, b + l2.b);
+		r += l2.r;
+		g += l2.g;
+		b += l2.b;
 	}
 };
 
@@ -22,6 +24,7 @@ struct Ray
 {
 	Point origin;
 	Point direction;
+	Ray(Point origin, Point direction): origin(origin), direction(direction){};
 };
 
 /*
