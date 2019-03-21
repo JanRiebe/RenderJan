@@ -89,6 +89,7 @@ Light CalculateOutgoingLightFromPointAtSurface(Sphere* object, Point p, Ray view
 
 	Point normal = object->GetNormalAtPoint(&p);
 	float reflectivity = object->GetReflectivityAtPoint(&p);
+	float refractivity = object->GetRefractivityAtPoint(&p);
 
 		// Labertian with shadows
 	vector<LightSource>::iterator lightSource = lights->begin();
@@ -117,12 +118,84 @@ Light CalculateOutgoingLightFromPointAtSurface(Sphere* object, Point p, Ray view
 		l += reflection * reflectivity;
 	}
 
+	// Refraction
+	if(recutsionDepth < maxRecursionDepth)
+	{
+		Light refraction = CastRefractionRay(&viewRay, &p, &normal, lights, objects, recutsionDepth, maxRecursionDepth);
+		l += refraction * refractivity;
+	}
+
 	return l;
 }
 
 
 Light CastReflectionRay(Ray* incommingRay, Point* reflectionPosition, Point* surfaceNormal, vector<LightSource>* lights, vector<Sphere>* objects, int recutsionDepth, int maxRecursionDepth)
 {
+
+	Point reflectionDirection = incommingRay->direction - (*surfaceNormal)*2*Point::DotProduct(surfaceNormal, &(incommingRay->direction));
+	Ray reflectionRay(*reflectionPosition+*surfaceNormal*shadowBias, reflectionDirection);
+	return CastRay(reflectionRay, objects, lights, recutsionDepth, maxRecursionDepth);
+}
+
+/*
+Reference from http://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/reflection-refraction-fresnel
+
+Vec3f refract(const Vec3f &I, const Vec3f &N, const float &ior)
+{
+float cosi = clamp(-1, 1, dotProduct(I, N));
+float etai = 1, etat = ior;
+Vec3f n = N;
+if (cosi < 0) { cosi = -cosi; } else { std::swap(etai, etat); n= -N; }
+float eta = etai / etat;
+float k = 1 - eta * eta * (1 - cosi * cosi);
+return k < 0 ? 0 : eta * I + (eta * cosi - sqrtf(k)) * n;
+}
+
+Some thoughts:
+Would it make sense to track outside the function what the IOR of the current medium is and pass it in with the IOR of the next medium?
+Maybe the ray could carry the IOR with it.
+
+Is a total internal reflection different from a reflection?
+In this case I could check whether a total internal reflection will occur and then call either reflect or refract.
+Basically using the same mechanism for all surfaces.
+Though, is a total internal reflection really just a reflection? Yes.
+
+How should I determine how much reflectivity and refractivity there is?
+I would need to send two rays anyway, one for reflection one for refraction.
+Unless there is a total internal reflection, in which case no refraction happens.
+
+
+*/
+
+
+
+Light CastRefractionRay(Ray* incommingRay, Point* reflectionPosition, Point* surfaceNormal, vector<LightSource>* lights, vector<Sphere>* objects, float ior, float iorPrevious, int recutsionDepth, int maxRecursionDepth)
+{
+
+
+	Point normal = *surfaceNormal;
+	float normalDotIncomming = surfaceNormal->DotProduct(incommingRay);
+
+	if(normalDotIncomming < 0)
+	{
+		// The ray is comming from outside the object with the highest ior.
+		// Reversing normalDotIncomming because it needs to be positive.
+		normalDotIncomming = -normalDotIncomming;
+	}
+	else
+	{
+		// The ray is comming from inside the object.
+		// Reversing the normal direction.
+		normal = -normal;
+		// Swaping around the idices of refraction.
+		float tmp = ior;
+		ior = iorPrevious;
+		iorPrevious = tmp;
+	}
+
+	float iorRelative = iorPrevious / ior;
+
+	float k = 1-iorRelative * iorRelative * (1-)
 
 	Point reflectionDirection = incommingRay->direction - (*surfaceNormal)*2*Point::DotProduct(surfaceNormal, &(incommingRay->direction));
 	Ray reflectionRay(*reflectionPosition+*surfaceNormal*shadowBias, reflectionDirection);
