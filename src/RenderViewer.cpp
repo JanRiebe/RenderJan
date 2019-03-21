@@ -80,7 +80,12 @@ void RenderViewer::Show(Image* img)
 
 			Uint32 pixel = r + g + b + a;
 			*/
+			#define CLAMP(x) if(x>1)x=1;else if(x<0) x=0;
 			Pixel p = img->getPixelAt(x, y);
+			CLAMP(p.r);
+			CLAMP(p.g);
+			CLAMP(p.b);
+			CLAMP(p.a);
 			Uint32 color = SDL_MapRGBA(displaySurface->format, p.r * 255, p.g * 255, p.b * 255, p.a * 255);
 
 			// Writing the float data into the surface.
