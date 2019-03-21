@@ -15,6 +15,8 @@ struct Sphere : SceneElement
 
 	Point GetNormalAtPoint(Point* p);
 
+	float GetReflectivityAtPoint(Point* p);
+
 	/*
 	Light GetColorAtPoint(Point p, Ray viewRay, vector<LightSource>* lights, vector<Sphere>* objects)
 	{

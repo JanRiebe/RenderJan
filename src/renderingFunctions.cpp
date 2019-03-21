@@ -88,6 +88,7 @@ Light CalculateOutgoingLightFromPointAtSurface(Sphere* object, Point p, Ray view
 	Light l = Light{ 0, 0, 0 };
 
 	Point normal = object->GetNormalAtPoint(&p);
+	float reflectivity = object->GetReflectivityAtPoint(&p);
 
 		// Labertian with shadows
 	vector<LightSource>::iterator lightSource = lights->begin();
@@ -113,7 +114,7 @@ Light CalculateOutgoingLightFromPointAtSurface(Sphere* object, Point p, Ray view
 	if(recutsionDepth < maxRecursionDepth)
 	{
 		Light reflection = CastReflectionRay(&viewRay, &p, &normal, lights, objects, recutsionDepth, maxRecursionDepth);
-		l += reflection;
+		l += reflection * reflectivity;
 	}
 
 	return l;

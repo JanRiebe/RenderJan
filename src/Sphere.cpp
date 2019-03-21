@@ -60,3 +60,8 @@ Point Sphere::GetNormalAtPoint(Point* p)
   Point::Normalise(&normal);
   return normal;
 }
+
+float Sphere::GetReflectivityAtPoint(Point* p)
+{
+  return 0.5f;
+}

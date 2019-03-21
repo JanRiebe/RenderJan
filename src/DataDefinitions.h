@@ -17,6 +17,10 @@ struct Light
 		g += l2.g;
 		b += l2.b;
 	}
+	Light operator*(float f)
+	{
+		return Light(r*f, g*f, b*f);
+	}
 };
 
 
