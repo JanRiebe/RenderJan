@@ -67,7 +67,7 @@ float Sphere::GetReflectivityAtPoint(Point* p)
 }
 
 
-float Sphere::GetRefractivityAtPoint(Point* p)
+float Sphere::GetIORAtPoint(Point* p)
 {
-  return 0.5f;
+  return 1.4f
 }
