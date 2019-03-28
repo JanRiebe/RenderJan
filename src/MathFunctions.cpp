@@ -27,3 +27,12 @@ double InverseSquareFalloff(double intensity, double distance)
 {
 	return intensity / (4 * PI * distance*distance);
 }
+
+float clamp(float floor, float ceil, float in)
+{
+	if(in<floor)
+		return floor;
+	else if (in>ceil)
+		return ceil;
+	return in;
+}

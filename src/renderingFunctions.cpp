@@ -4,6 +4,7 @@
 #include "MathFunctions.h"
 #include "Scene.h"
 #include "Image.h"
+#include <iostream>
 
 /*
 Renders the scene and returns a pointer to the rendered image.
@@ -19,7 +20,7 @@ Image* RenderScene(Scene* scene, int width, int height, int maxReflectionDepth)
 		for (int x = 0; x < width; x++)
 		{
 			Pixel* p = &pix[y*width + x];
-			Light l = CastRay(Ray{ Point(-100, y - height / 2, x - width / 2), Point(1, 0, 0) }, &(scene->spheres), &(scene->lights), 0, maxReflectionDepth);
+			Light l = CastRay(Ray(/*origin*/ Point(-100, y - height / 2, x - width / 2), /*direction*/ Point(1, 0, 0), /*initial IOR*/1.0), &(scene->spheres), &(scene->lights), 0, maxReflectionDepth);
 			p->r = l.r;
 			p->g = l.g;
 			p->b = l.b;
@@ -83,21 +84,19 @@ bool CastShadowRay(Ray r, vector<Sphere>* objects)
 
 
 
-Light CalculateOutgoingLightFromPointAtSurface(Sphere* object, Point p, Ray viewRay, vector<LightSource>* lights, vector<Sphere>* objects, int recutsionDepth, int maxRecursionDepth)
+Light CalculateOutgoingLightFromPointAtSurface(Sphere* object, Point p, Ray viewRay, vector<LightSource>* lights, vector<Sphere>* objects, int recursionDepth, int maxRecursionDepth)
 {
 	Light l = Light{ 0, 0, 0 };
 
 	Point normal = object->GetNormalAtPoint(&p);
-	float reflectivity = object->GetReflectivityAtPoint(&p);
-	float refractivity = object->GetRefractivityAtPoint(&p);
 
-		// Labertian with shadows
+	// Labertian with shadows
 	vector<LightSource>::iterator lightSource = lights->begin();
 	for (lightSource; lightSource != lights->end(); lightSource++)
 	{
 		// Shadow ray
 		Point pToLight = (lightSource->position - p);
-		if (CastShadowRay(Ray{ p + normal*shadowBias,  pToLight }, objects))
+		if (CastShadowRay(Ray( p + normal*shadowBias,  pToLight, viewRay.lastIOR ), objects))
 		{
 			// If the shadow ray didn't hit any object, the light is visible.
 			// Lamberian
@@ -105,23 +104,18 @@ Light CalculateOutgoingLightFromPointAtSurface(Sphere* object, Point p, Ray view
 			float facingRatio = std::max(0.0f, Point::DotProduct(&viewingDirection, &normal));
 			float intensityAfterFalloff = 1;
 			if(lightSource->isPoint) intensityAfterFalloff = InverseSquareFalloff(lightSource->scale, pToLight.CalculateLength());
-			l.r += min(1.0f, max(0.0f, object->color.x * intensityAfterFalloff * facingRatio * lightSource->color.x));
-			l.g += min(1.0f, max(0.0f, object->color.y * intensityAfterFalloff * facingRatio * lightSource->color.y));
-			l.b += min(1.0f, max(0.0f, object->color.z * intensityAfterFalloff * facingRatio * lightSource->color.z));
+			l.r += clamp(0, 1, object->color.x * intensityAfterFalloff * facingRatio * lightSource->color.x);
+			l.g += clamp(0, 1, object->color.y * intensityAfterFalloff * facingRatio * lightSource->color.y);
+			l.b += clamp(0, 1, object->color.z * intensityAfterFalloff * facingRatio * lightSource->color.z);
 		}
 	}
 
-	// Reflection
-	if(recutsionDepth < maxRecursionDepth)
+	// Reflection and refraction
+	if(recursionDepth < maxRecursionDepth)
 	{
-		Light reflection = CastReflectionRay(&viewRay, &p, &normal, lights, objects, recutsionDepth, maxRecursionDepth);
-		l += reflection * reflectivity;
-	}
-
-	// Refraction
-	if(recutsionDepth < maxRecursionDepth)
-	{
-		ReflectRefract(incommingRay, pointOnSurface, object, lights, objects, recursionDepth, maxRecursionDepth);
+		Light rf = ReflectRefract(&viewRay, &p, &normal, object, lights, objects, recursionDepth, maxRecursionDepth);
+		std::cout <<"r "<<rf.r<<" g "<<rf.g<<" b "<<rf.b<<std::endl;
+		l+= rf;
 	}
 
 	return l;
@@ -155,52 +149,64 @@ Else
 	then added depending on their share.
 */
 
-Light ReflectRefract(Ray* incommingRay, Point* pointOnSurface, Sphere* surface, vector<LightSource>* lights, vector<Sphere>* objects, int recursionDepth, int maxRecursionDepth)
+Light ReflectRefract(Ray* incommingRay, Point* pointOnSurface, Point* normal, Sphere* surface, vector<LightSource>* lights, vector<Sphere>* objects, int recursionDepth, int maxRecursionDepth)
 {
-	Light l;
+	Light l = Light{ 0, 0, 0 };
 	Ray* reflectionRay = nullptr;
 	Ray* refractionRay = nullptr;
 
-	float reflectivity = surface->GetReflectivityAtPoint(surface);
+	float reflectivity = surface->GetReflectivityAtPoint(pointOnSurface);
 	// We only need to cast both rays, if it isn't toal reflection or total refraction.
 	if(reflectivity > 0)
-		CreateReflectionRay(incommingRay, pointOnSurface, surface->GetNormalAtPoint(pointOnSurface), surface->GetIORAtPoint(pointOnSurface));
-	else if(reflectivity < 1)
-		CreateRefractionRay(incommingRay, pointOnSurface, surface->GetNormalAtPoint(pointOnSurface), surface->GetIORAtPoint(pointOnSurface));
+		reflectionRay = CreateReflectionRay(incommingRay, pointOnSurface, normal, surface->GetIORAtPoint(pointOnSurface));
+	if(reflectivity < 1)
+		refractionRay = CreateRefractionRay(incommingRay, pointOnSurface, normal, surface->GetIORAtPoint(pointOnSurface));
 	// If there is both reflection and refraction, we cast both rays and give each the right amount of light.
 	if(reflectionRay && refractionRay)
 	{
-		l  = CastRay(*refractionRay, objects, lights, recursionDepth, maxRecursionDepth) * (1 - reflecion));
-		l += CastRay(*reflectionRay, objects, lights, recursionDepth, maxRecursionDepth) * reflecion;
+		l  = CastRay(*refractionRay, objects, lights, recursionDepth, maxRecursionDepth) * (1 - reflectivity);
+		l += CastRay(*reflectionRay, objects, lights, recursionDepth, maxRecursionDepth) * reflectivity;
 	}
 	// If it's reflection only we only cast the reflection ray.
 	else if(reflectionRay)
 	{
-		l = CastRay(*reflectionRay, objects, lights, recursionDepth, maxRecursionDepth) * reflecion;
+		l = CastRay(*reflectionRay, objects, lights, recursionDepth, maxRecursionDepth) * reflectivity;
 	}
 	// If it's refraction only we cast only the refraction ray.
 	else if(refractionRay)
 	{
-			l  = CastRay(*refractionRay, objects, lights, recursionDepth, maxRecursionDepth) * (1 - reflecion));
+			l  = CastRay(*refractionRay, objects, lights, recursionDepth, maxRecursionDepth) * (1 - reflectivity);
 	}
 	// If there should be refraction only but it is full internal reflection, we cast a reflection ray.
 	else
 	{
-			l = CastRay(*reflectionRay, objects, lights, recursionDepth, maxRecursionDepth) * reflecion;
+			//l = CastRay(*reflectionRay, objects, lights, recursionDepth, maxRecursionDepth) * reflectivity;
 	}
+
+	// Cleaning up
+	if(reflectionRay)
+		delete reflectionRay;
+	if(refractionRay)
+		delete refractionRay;
 }
+
+
+
 
 Ray* CreateReflectionRay(Ray* incommingRay, Point* reflectionPosition, Point* surfaceNormal, const float& ior)
 {
 	Point reflectionDirection = incommingRay->direction - (*surfaceNormal)*2*Point::DotProduct(surfaceNormal, &(incommingRay->direction));
-	return new Ray(*reflectionPosition+*surfaceNormal*shadowBias, reflectionDirection, ior);
+	Ray* r = new Ray(*reflectionPosition+*surfaceNormal*shadowBias, reflectionDirection, ior);
+	return r;
 }
+
+
 
 
 Ray* CreateRefractionRay(Ray* incommingRay, Point* reflectionPosition, Point* surfaceNormal, const float &ior)
 {
 	// The projection of the incomming ray onto the surface normal.
-	float cosi = clamp(-1, 1, incommingRay->direction.DotProduct(surfaceNormal));
+	float cosi = clamp(-1, 1, Point::DotProduct(surfaceNormal, &incommingRay->direction));
 
 	//float etai = incommingRay->lastIOR, etat = ior;
 	Point normal = *surfaceNormal;
@@ -231,7 +237,7 @@ Ray* CreateRefractionRay(Ray* incommingRay, Point* reflectionPosition, Point* su
 	// Else we create a ray to be used as refraction ray.
 	else
 	{
-		#define OUT_DIR = relativeIOR * incommingRay->direction + (relativeIOR * cosi - sqrtf(k)) * normal;
+		#define OUT_DIR incommingRay->direction * relativeIOR + normal * (relativeIOR * cosi - sqrtf(k))
 		return new Ray(*reflectionPosition, OUT_DIR, ior);
 	}
 }

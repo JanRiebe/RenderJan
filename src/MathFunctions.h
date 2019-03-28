@@ -4,3 +4,5 @@
 bool solveQuadratic(const float &a, const float &b, const float &c, float &x0, float &x1);
 
 double InverseSquareFalloff(double intensity, double distance);
+
+float clamp(float floor, float ceil, float in);

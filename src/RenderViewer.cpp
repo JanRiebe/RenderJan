@@ -286,7 +286,7 @@ void RenderViewer::Render()
 	unsigned int startTime = SDL_GetTicks();
 
 	// Rendering the scene into an image.
-	Image* img = RenderScene(scene,SCREEN_WIDTH, SCREEN_HEIGHT, 2);
+	Image* img = RenderScene(scene,SCREEN_WIDTH, SCREEN_HEIGHT, 5);
 
 	// Calsulating the time it took to render.
 	int timeTook = SDL_GetTicks() - startTime;

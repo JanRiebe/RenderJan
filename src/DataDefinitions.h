@@ -29,7 +29,7 @@ struct Ray
 	Point origin;
 	Point direction;
 	float lastIOR;
-	Ray(Point origin, Point direction, float lastIOR): origin(origin), direction(direction){}, lastIOR(lastIOR);
+	Ray(Point origin, Point direction, float lastIOR): origin(origin), direction(direction), lastIOR(lastIOR){};
 };
 
 /*
