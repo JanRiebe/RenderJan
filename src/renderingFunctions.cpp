@@ -64,7 +64,7 @@ Light CastRay(Ray r, vector<Sphere>* objects, vector<LightSource>* lights, int r
 	if (closestObject != objects->end())
 		return CalculateOutgoingLightFromPointAtSurface(&(*closestObject), closestPoint, r, lights, objects, ++recursionDepth, maxRecursionDepth);
 	else
-		return{ 1, 0, 0 };
+		return{ r.direction.x*2 - 1 , r.direction.y * 2 - 1, r.direction.z * 2 - 1 };
 }
 
 // Casts a ray and returns whether it did not hit an object.
@@ -114,7 +114,6 @@ Light CalculateOutgoingLightFromPointAtSurface(Sphere* object, Point p, Ray view
 	if(recursionDepth < maxRecursionDepth)
 	{
 		Light rf = ReflectRefract(&viewRay, &p, &normal, object, lights, objects, recursionDepth, maxRecursionDepth);
-		std::cout <<"r "<<rf.r<<" g "<<rf.g<<" b "<<rf.b<<std::endl;
 		l+= rf;
 	}
 
@@ -188,6 +187,8 @@ Light ReflectRefract(Ray* incommingRay, Point* pointOnSurface, Point* normal, Sp
 		delete reflectionRay;
 	if(refractionRay)
 		delete refractionRay;
+
+		return l;
 }
 
 
@@ -238,6 +239,6 @@ Ray* CreateRefractionRay(Ray* incommingRay, Point* reflectionPosition, Point* su
 	else
 	{
 		#define OUT_DIR incommingRay->direction * relativeIOR + normal * (relativeIOR * cosi - sqrtf(k))
-		return new Ray(*reflectionPosition, OUT_DIR, ior);
+		return new Ray(*reflectionPosition - *surfaceNormal*shadowBias, OUT_DIR, ior);
 	}
 }
