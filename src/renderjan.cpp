@@ -20,31 +20,38 @@ int main(int argc, char* args[])
 
 		int size = 4;
 
-	float mat_a[size*size] =
+	Matrix4x4 mat_a =
 	{
 		1,0,0,0,
 		0,1,0,0,
 		0,0,1,0,
 		0,0,0,1
 	};
-	float mat_b[size*size] =
+	mat_a =  GetRotationMatrix(PI/2,0,0);
+	Matrix4x4 mat_b =
 	{
 		1,0,0,0,
 		0,1,0,0,
 		0,0,1,0,
-		1,2,3,1
+		0,0,0,1
 	};
 
-	float vec[size] = {1,2,3,4};
+	float vec[size] = {1,2,3,1};
+	for(int c=0; c<size; c++)
+	{
+		cout << vec[c]<<" ";
+	}
+		cout<<endl;
 
-	float* mat_c;
+
+	Matrix4x4 mat_c;
 	mat_c = MatMult(mat_a, mat_b);
 
 	for(int r=0; r<size; r++)
   {
     for(int c=0; c<size; c++)
     {
-			cout << mat_c[c+r*size];
+			cout << mat_c[c+r*size]<<" ";
 		}
 		cout << endl;
 	}

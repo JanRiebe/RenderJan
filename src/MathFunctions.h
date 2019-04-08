@@ -7,7 +7,22 @@ double InverseSquareFalloff(double intensity, double distance);
 
 float clamp(float floor, float ceil, float in);
 
-float* MatMult(float a[16], float b[16]);
-float* HomogMat(float m[16]);
-float* VecMatMult(float vec[4], float mat[16]);
+
+struct Matrix4x4
+{
+  float values[16] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,};
+
+  float& operator[](int i)
+  {
+    return values[i%16];
+  }
+};
+
+
+
+Matrix4x4 MatMult(Matrix4x4 a, Matrix4x4 b);
+Matrix4x4 HomogMat(Matrix4x4 m);
+float* VecMatMult(float vec[4], Matrix4x4 mat);
 float* HomogVec(float vec[4]);
+
+Matrix4x4 GetRotationMatrix(float angleX, float angleY, float angleZ);

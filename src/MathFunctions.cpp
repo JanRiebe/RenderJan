@@ -41,10 +41,10 @@ float clamp(float floor, float ceil, float in)
 
 
 
-float* MatMult(float a[16], float b[16])
+Matrix4x4 MatMult(Matrix4x4 a, Matrix4x4 b)
 {
 	const unsigned int size = 4;
-  static float ret[size*size];
+  Matrix4x4 ret;
   for(int r=0; r<size; r++)
   {
     for(int c=0; c<size; c++)
@@ -59,11 +59,11 @@ float* MatMult(float a[16], float b[16])
   return ret;
 }
 
-float* HomogMat(float m[16])
+Matrix4x4 HomogMat(Matrix4x4 m)
 {
 	const unsigned int size = 4;
 
-	static float ret[size] = {0,0,0,0};
+	Matrix4x4 ret;
 
 	// Avoiding devision by 0 error.
 	if(m[size-1] == 0)
@@ -78,7 +78,7 @@ float* HomogMat(float m[16])
 
 
 
-float* VecMatMult(float vec[4], float mat[16])
+float* VecMatMult(float vec[4], Matrix4x4 mat)
 {
 	const unsigned int size = 4;
 	static float ret[size];
@@ -110,4 +110,24 @@ float* HomogVec(float vec[4])
     ret[c] = vec[c] / vec[size-1];
   }
   return ret;
+}
+
+
+Matrix4x4 GetRotationMatrix(float a, float b, float c)
+{
+	float sinA = sin(a);
+	float sinB = sin(b);
+	float sinC = sin(c);
+	float cosA = cos(a);
+	float cosB = cos(b);
+	float cosC = cos(c);
+
+	Matrix4x4 ret =
+	{
+			cosA*cosB, 									sinA*cosB, 									-sinB,				0,
+			cosA*sinB*sinC-sinA*cosC,		sinA*sinB*sinC+cosA*cosC,		cosB*sinC, 		0,
+			cosA*sinB*cosC+sinA*sinC,		sinA*sinB*cosC-cosA*sinC,		cosB*cosC,		0,
+			0,													0,													0,						1
+	};
+	return ret;
 }
