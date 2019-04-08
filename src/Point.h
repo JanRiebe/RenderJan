@@ -6,7 +6,7 @@ class Point
 public:
 #pragma region public variables
 	// The coordinates of the point.
-	float x, y, z, w;
+	float x, y, z;
 #pragma endregion
 
 #pragma region public methods

@@ -18,6 +18,12 @@ int main(int argc, char* args[])
 	cout << "Welcome to Renderjan!\n\n";
 
 
+
+
+
+// Matrix testing
+
+
 		int size = 4;
 
 	Matrix4x4 mat_a =
@@ -67,6 +73,8 @@ int main(int argc, char* args[])
 	}
 
 	cout<<endl;
+
+//end matrix testing
 
 
 

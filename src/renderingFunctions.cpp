@@ -5,7 +5,7 @@
 #include "Scene.h"
 #include "Image.h"
 #include <iostream>
-
+float tmp=0;
 /*
 Renders the scene and returns a pointer to the rendered image.
 The caller gets ownership of the returned pointer.
@@ -20,13 +20,42 @@ Image* RenderScene(Scene* scene, int width, int height, int maxReflectionDepth)
 		for (int x = 0; x < width; x++)
 		{
 			Pixel* p = &pix[y*width + x];
-			Light l = CastRay(Ray(/*origin*/ Point(-100, y - height / 2, x - width / 2), /*direction*/ Point(1, 0, 0), /*initial IOR*/1.0), &(scene->spheres), &(scene->lights), 0, maxReflectionDepth);
+			float xRad = (x-width/2)/(1000000*sin(tmp));
+			float yRad = (y-height/2)/(1000000*sin(tmp));
+			Matrix4x4 rotMat = GetRotationMatrix(xRad, yRad, 0);
+			/*
+			int size =4;
+			for(int r=0; r<size; r++)
+		  {
+		    for(int c=0; c<size; c++)
+		    {
+					cout << rotMat[c+r*size]<<" ";
+				}
+				cout << endl;
+			}
+			cout << endl;
+			*/
+			float vect[4] = {1,tmp,0,1};
+			float* vec = VecMatMult(vec, rotMat);
+			vec = HomogVec(vec);
+			/*
+			for(int c=0; c<size; c++)
+			{
+				cout << vec[c]<<" ";
+			}
+			cout<<endl;
+			cout<<endl;
+			cout<<endl;
+			*/
+			Light l = CastRay(Ray(/*origin*/ Point( x - width / 2, y - height / 2,-100), /*direction*/ Point(vec[0], vec[1], vec[2]), /*initial IOR*/1.0), &(scene->spheres), &(scene->lights), 0, maxReflectionDepth);
 			p->r = l.r;
 			p->g = l.g;
 			p->b = l.b;
 			p->a = 1;
 		}
 	}
+	tmp+=0.1;
+	cout << (1000000*sin(tmp)) <<endl;
 
 	img->setPixel(pix, width, height);
 	return img;

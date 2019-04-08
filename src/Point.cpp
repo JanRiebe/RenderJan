@@ -5,7 +5,7 @@
 
 
 Point::Point(float X, float Y, float Z) :
-	x(X), y(Y), z(Z), w(1)
+	x(X), y(Y), z(Z)
 {}
 
 
