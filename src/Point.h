@@ -1,5 +1,7 @@
 #pragma once
 
+#include "MathFunctions.h"
+
 /// <summary>A point acts like a mathematical 3D vector. </summary>
 class Point
 {
@@ -16,6 +18,11 @@ public:
 	/// <param name="z">y: The z coordinates of the point. Default value 0.</param>
 	/// </summary>
 	Point(float x = 0, float y = 0, float z = 0);
+
+	Vec4 ToVec4();
+
+	Matrix4x4 ToTranslationMatrix();
+
 
 	/// <summary>Multiplies x, y, z of a point by a factor.
 	/// <param name="p">p: A pointer to the Point which values should be used in the multiplication.</param>

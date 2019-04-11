@@ -28,7 +28,6 @@ RenderViewer::RenderViewer()
 	}
 	else
 	{
-		scene = new Scene();
 		SetupTestScene();
 		Render();
 		EventLoop();
@@ -262,6 +261,8 @@ bool RenderViewer::Init()
 
 void RenderViewer::SetupTestScene()
 {
+	scene = new Scene();
+
 	/*
 	//lights.push_back(LightSource(Point(0.0f, 0.0f, -100.0f), Point(1.0f, 0.0f, 0.0f), 1.0f));
 	//lights.push_back(LightSource(Point(-100.0f, 100.0f, -100.0f), Point(0.0f, 1.0f, 0.0f), 1.0f));

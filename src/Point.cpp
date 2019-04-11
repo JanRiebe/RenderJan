@@ -9,6 +9,24 @@ Point::Point(float X, float Y, float Z) :
 {}
 
 
+Vec4 Point::ToVec4()
+{
+	return {x, y, z, 1};
+}
+
+
+Matrix4x4 Point::ToTranslationMatrix()
+{
+	return
+	{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		x, y, z, 1
+	};
+}
+
+
 Point Point::operator*(float f)
 {
 	return Point(x*f, y*f, z*f);

@@ -78,10 +78,10 @@ Matrix4x4 HomogMat(Matrix4x4 m)
 
 
 
-float* VecMatMult(float vec[4], Matrix4x4 mat)
+Vec4 VecMatMult(Vec4 vec, Matrix4x4 mat)
 {
 	const unsigned int size = 4;
-	static float ret[size];
+	Vec4 ret;
   for(int c=0; c<size; c++)
   {
     ret[c] = 0;
@@ -95,21 +95,18 @@ float* VecMatMult(float vec[4], Matrix4x4 mat)
 
 
 
-float* HomogVec(float vec[4])
+Vec4 HomogVec(Vec4 vec)
 {
 	const unsigned int size = 4;
-
-	static float ret[size] = {0,0,0,0};
-
 	// Avoiding devision by 0 error.
 	if(vec[size-1] == 0)
-		return ret;
+		return vec;
 
   for(int c=0; c<size; c++)
   {
-    ret[c] = vec[c] / vec[size-1];
+    vec[c] /= vec[size-1];
   }
-  return ret;
+  return vec;
 }
 
 
