@@ -127,6 +127,9 @@ void RenderViewer::EventLoop()
 			{
 				switch (e.key.keysym.sym)
 				{
+					case SDLK_ESCAPE:
+						quit = true;
+						break;
 					case SDLK_RETURN:
 						Render();
 						break;
@@ -262,7 +265,8 @@ bool RenderViewer::Init()
 void RenderViewer::SetupTestScene()
 {
 	scene = new Scene();
-
+	scene->camera.imageWidth = SCREEN_WIDTH;
+	scene->camera.imageHeight = SCREEN_HEIGHT;
 	/*
 	//lights.push_back(LightSource(Point(0.0f, 0.0f, -100.0f), Point(1.0f, 0.0f, 0.0f), 1.0f));
 	//lights.push_back(LightSource(Point(-100.0f, 100.0f, -100.0f), Point(0.0f, 1.0f, 0.0f), 1.0f));

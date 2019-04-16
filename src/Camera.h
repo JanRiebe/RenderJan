@@ -7,14 +7,14 @@ class Camera
 {
 private:
   float aspectRatio;
-  int imageWidth, imageHeight;
   Matrix4x4 cameraToWorld;
   Point position, rotation;
 
 public:
   float fieldOfView;
+  int imageWidth, imageHeight;
 
-  Camera(Point pos = Point(0,0,-1000), Point rot= Point(0,0,0), float fov = PI/2, int width=768, int height=576);
+  Camera(int width=768, int height=576, Point pos = Point(0,0,-100), Point rot= Point(0,PI,0), float fov = PI/2);
 
   Ray PixelToRay(int x, int y);
 };

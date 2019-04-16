@@ -12,6 +12,11 @@ The caller gets ownership of the returned pointer.
 */
 Image* RenderScene(Scene* scene, int width, int height, int maxReflectionDepth)
 {
+	width = scene->camera.imageWidth;
+	height = scene->camera.imageHeight;
+
+	cout << "width "<<width<< " height "<<height<<endl;
+
 	Image* img = new Image();
 	Pixel* pix = new Pixel[width*height];
 
@@ -20,36 +25,8 @@ Image* RenderScene(Scene* scene, int width, int height, int maxReflectionDepth)
 		for (int x = 0; x < width; x++)
 		{
 			Pixel* p = &pix[y*width + x];
-			/*
-			float xRad = (x-width/2)/(1000000*sin(tmp));
-			float yRad = (y-height/2)/(1000000*sin(tmp));
-			Matrix4x4 rotMat = GetRotationMatrix(xRad, yRad, 0);
-			/*
-			int size =4;
-			for(int r=0; r<size; r++)
-		  {
-		    for(int c=0; c<size; c++)
-		    {
-					cout << rotMat[c+r*size]<<" ";
-				}
-				cout << endl;
-			}
-			cout << endl;
-			*//*
-			Vec4 vec = {1,tmp,0,1};
-			vec = VecMatMult(vec, rotMat);
-			vec = HomogVec(vec);
-			/*
-			for(int c=0; c<size; c++)
-			{
-				cout << vec[c]<<" ";
-			}
-			cout<<endl;
-			cout<<endl;
-			cout<<endl;
-			*/
 			Ray ray = scene->camera.PixelToRay(x, y);
-			Light l = CastRay(ray, &(scene->spheres), &(scene->lights), 0, maxReflectionDepth);// Ray(/*origin*/ Point( x - width / 2, y - height / 2,-100), /*direction*/ Point(vec[0], vec[1], vec[2]), /*initial IOR*/1.0), &(scene->spheres), &(scene->lights), 0, maxReflectionDepth);
+			Light l = CastRay(ray, &(scene->spheres), &(scene->lights), 0, maxReflectionDepth);// Ray(/*origin*/ Point( x - width / 2, y - height / 2,-100), /*direction*/ Point(0,0,1), /*initial IOR*/1.0), &(scene->spheres), &(scene->lights), 0, maxReflectionDepth);
 			p->r = l.r;
 			p->g = l.g;
 			p->b = l.b;
