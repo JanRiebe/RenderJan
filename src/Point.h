@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MathFunctions.h"
+#include <ostream>
 
 /// <summary>A point acts like a mathematical 3D vector. </summary>
 class Point
@@ -75,3 +76,5 @@ public:
 
 
 };
+
+std::ostream& operator<<(std::ostream& os, const Point& obj);

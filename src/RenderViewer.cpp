@@ -148,7 +148,7 @@ void RenderViewer::EventLoop()
 						// add light
 						scene->lights.push_back(
 							LightSource(
-								Point(-65.0f, -45.0f, -35.0f),	// position
+								Point(0.0f, 0.0f, 0.0f),	// position
 								Point(1.0f, 1.0f, 1.0f),				// color
 								30000.0f,												// intensity
 								false														// is point light
@@ -177,42 +177,42 @@ void RenderViewer::EventLoop()
 						// move selected light or sphere in y axis
 						if(selected)
 						{
-							selected->position.y++;
+							selected->position.y+=10;
 						}
 						break;
 					case SDLK_DOWN:
 						//move selected light or sphere in y axis
 						if(selected)
 						{
-							selected->position.y--;
+							selected->position.y-=10;
 						}
 						break;
 					case SDLK_LEFT:
 						//move selected light or sphere in x axis
 						if(selected)
 						{
-							selected->position.x++;
+							selected->position.x+=10;
 						}
 						break;
 					case SDLK_RIGHT:
 						// move selected light or sphere in x axis
 						if(selected)
 						{
-							selected->position.x--;
+							selected->position.x-=10;
 						}
 						break;
 					case SDLK_z:
 						// move selected light or sphere in z axis
 						if(selected)
 						{
-							selected->position.z++;
+							selected->position.z+=10;
 						}
 						break;
 					case SDLK_h:
 						// move selected light or sphere in z axis
 						if(selected)
 						{
-							selected->position.z--;
+							selected->position.z-=10;
 						}
 						break;
 					default:
@@ -291,7 +291,7 @@ void RenderViewer::Render()
 	unsigned int startTime = SDL_GetTicks();
 
 	// Rendering the scene into an image.
-	Image* img = RenderScene(scene,SCREEN_WIDTH, SCREEN_HEIGHT, 5);
+	Image* img = RenderScene(scene,SCREEN_WIDTH, SCREEN_HEIGHT, 8);
 
 	// Calsulating the time it took to render.
 	int timeTook = SDL_GetTicks() - startTime;

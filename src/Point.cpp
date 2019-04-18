@@ -102,3 +102,9 @@ double Point::CalculateLength()
 {
 	return sqrt(x*x + y*y + z*z);
 }
+
+std::ostream& operator<<(std::ostream& os, const Point& obj)
+{
+      os << obj.x << " "<<obj.y << " "<<obj.z;
+      return os;
+}
