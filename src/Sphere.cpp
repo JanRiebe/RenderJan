@@ -9,7 +9,7 @@
 using namespace std;
 
 
-Sphere::Sphere(Point pos, float scale, Point color):SceneElement(pos, scale, color){};
+Sphere::Sphere(Point pos, float scale, Point color, float reflectivity, float ior):SceneElement(pos, scale, color), reflectivity(reflectivity), ior(ior){};
 
 bool Sphere::Intersection(Ray* r, Point* outPointOfIntersection, float* outDistance)
 {
@@ -40,18 +40,6 @@ bool Sphere::Intersection(Ray* r, Point* outPointOfIntersection, float* outDista
 
   // This was a hit, so we return true.
   return true;
-
-  /*
-
-  //cout << "Ray hits at distance " << t0 << endl;
-
-  // Assigning the color to the returned light.
-  Light l = GetColorAtPoint(hitPoint, r, lights);
-  // Assigning the distance to the returned light.
-  l.z = t0;
-
-  return l;
-  */
 }
 
 Point Sphere::GetNormalAtPoint(Point* p)
@@ -63,11 +51,11 @@ Point Sphere::GetNormalAtPoint(Point* p)
 
 float Sphere::GetReflectivityAtPoint(Point* p)
 {
-  return 0;// 0.5f;
+  return reflectivity;
 }
 
 
 float Sphere::GetIORAtPoint(Point* p)
 {
-  return 1.1;// 1.4f;
+  return ior;
 }

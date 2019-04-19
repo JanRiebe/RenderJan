@@ -2,7 +2,7 @@
 #include "Point.h"
 #include "SceneElement.h"
 
-struct LightSource : SceneElement
+class LightSource : public SceneElement
 {
 public:
 	bool isPoint;	//else directional

@@ -2,8 +2,9 @@
 
 #include "Point.h"
 
-struct SceneElement
+class SceneElement
 {
+public:
   Point position;
 
 	float scale;
