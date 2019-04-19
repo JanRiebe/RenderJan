@@ -2,7 +2,7 @@
 #include <math.h>
 #include <iostream>
 
-Camera::Camera(int width, int height, Point pos, Point rot, float fov): position(pos), rotation(rot), fieldOfView(fov), imageWidth(width), imageHeight(height)
+Camera::Camera(int width, int height, Point pos, Point rot, float fov): SceneElement(pos, fov, rot), rotation(rot), fieldOfView(fov), imageWidth(width), imageHeight(height)
 {
   aspectRatio = imageWidth / imageHeight;
   cameraToWorld = MatMult(GetRotationMatrix(rot.x, rot.y, rot.z), pos.ToTranslationMatrix());

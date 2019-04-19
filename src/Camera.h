@@ -3,12 +3,12 @@
 #include "MathFunctions.h"
 #include "DataDefinitions.h"
 
-class Camera
+class Camera : public SceneElement
 {
 private:
   float aspectRatio;
   Matrix4x4 cameraToWorld;
-  Point position, rotation;
+  Point rotation;
 
 public:
   float fieldOfView;

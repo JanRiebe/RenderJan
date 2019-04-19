@@ -156,6 +156,10 @@ void RenderViewer::EventLoop()
 						// Setting the just created SceneElement as the currently selected one.
 						selected = &(scene->lights.back());
 						break;
+					case SDLK_c:
+						// Setting the camera as the currently selected SceneElement.
+						selected = &(scene->camera);
+						break;
 					case SDLK_DELETE:
 						// TODO delete selected light or sphere
 						break;

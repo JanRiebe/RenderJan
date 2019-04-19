@@ -69,5 +69,5 @@ float Sphere::GetReflectivityAtPoint(Point* p)
 
 float Sphere::GetIORAtPoint(Point* p)
 {
-  return 1.4f;
+  return 1.1;// 1.4f;
 }
