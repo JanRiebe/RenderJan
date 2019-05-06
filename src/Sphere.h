@@ -5,15 +5,15 @@
 
 class Point;
 class Ray;
+class Material;
 
 class Sphere : public SceneElement
 {
 private:
-	float ior;
-	float reflectivity;
+	Material* material;
 
 public:
-	Sphere(Point pos, float scale, Point color, float reflectivity = 0.5, float IOR = 1.4f);
+	Sphere(Point pos, float scale, Material* material);
 
 	bool Intersection(Ray* r, Point* outPointOfIntersection = nullptr, float* outDistance = nullptr);
 

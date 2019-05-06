@@ -36,6 +36,8 @@ private:
 
 	// The scene that we render.
 	Scene* scene = nullptr;
+	// The material for the spheres. For now just one.
+	Material* material = nullptr;
 
 	void SetupTestScene();
 	void Render();

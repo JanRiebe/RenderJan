@@ -4,18 +4,16 @@
 #include "LightSource.h"
 #include "renderingFunctions.h"
 #include <algorithm>
+#include "Material.h"
 
 #include <iostream>
 using namespace std;
 
 
-Sphere::Sphere(Point pos, float scale, Point color, float reflectivity, float ior):SceneElement(pos, scale, color), reflectivity(reflectivity), ior(ior){};
+Sphere::Sphere(Point pos, float scale, Material* material): SceneElement(pos, scale, material->baseColor), material(material){};
 
 bool Sphere::Intersection(Ray* r, Point* outPointOfIntersection, float* outDistance)
 {
-  // Step 1: finding the position of the hit point, posHitPoint
-
-
   //Explanation https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
   float t0, t1; // solutions for t if the ray intersects
           // analytic solution
@@ -51,11 +49,11 @@ Point Sphere::GetNormalAtPoint(Point* p)
 
 float Sphere::GetReflectivityAtPoint(Point* p)
 {
-  return reflectivity;
+  material->reflectivity;
 }
 
 
 float Sphere::GetIORAtPoint(Point* p)
 {
-  return ior;
+  return material->ior;
 }

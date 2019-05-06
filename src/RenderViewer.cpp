@@ -1,7 +1,7 @@
 #include "RenderViewer.h"
 #include <string>
 #include "Scene.h"
-
+#include "Material.h"
 
 
 // Screen dimension constants
@@ -139,8 +139,8 @@ void RenderViewer::EventLoop()
 							Sphere(
 								Point(0.0f,0.0f,0.0f),			// position
 								40.0f,											// radius
-								Point(1.0f, 1.0f, 1.0f)			// color
-							));
+								material)										// material
+							);
 						// Setting the just created SceneElement as the currently selected one.
 						selected = &(scene->spheres.back());
 						break;
@@ -271,6 +271,14 @@ void RenderViewer::SetupTestScene()
 	scene = new Scene();
 	scene->camera.imageWidth = SCREEN_WIDTH;
 	scene->camera.imageHeight = SCREEN_HEIGHT;
+
+	if(!material)
+	{
+		material = new Material();
+		material->baseColor = {1,1,1};
+		material->ior = 1.3;
+		material->reflectivity = 0.5;
+	}
 	/*
 	//lights.push_back(LightSource(Point(0.0f, 0.0f, -100.0f), Point(1.0f, 0.0f, 0.0f), 1.0f));
 	//lights.push_back(LightSource(Point(-100.0f, 100.0f, -100.0f), Point(0.0f, 1.0f, 0.0f), 1.0f));
