@@ -10,7 +10,7 @@
 using namespace std;
 
 
-Sphere::Sphere(Point pos, float scale, Material* material): SceneElement(pos, scale, material->baseColor), material(material){};
+Sphere::Sphere(Point pos, float scale, Material* material): SceneElement(pos, scale, material->baseColor), material(material){std::cout<<"Creating sphere with reflection "<<material->reflectivity<<std::endl;};
 
 bool Sphere::Intersection(Ray* r, Point* outPointOfIntersection, float* outDistance)
 {
@@ -49,7 +49,7 @@ Point Sphere::GetNormalAtPoint(Point* p)
 
 float Sphere::GetReflectivityAtPoint(Point* p)
 {
-  material->reflectivity;
+  return material->reflectivity;
 }
 
 

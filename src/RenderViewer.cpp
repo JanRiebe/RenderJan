@@ -272,11 +272,11 @@ void RenderViewer::SetupTestScene()
 	scene->camera.imageWidth = SCREEN_WIDTH;
 	scene->camera.imageHeight = SCREEN_HEIGHT;
 
-	if(!material)
+	if(material == nullptr)
 	{
 		material = new Material();
 		material->baseColor = {1,1,1};
-		material->ior = 1.3;
+		material->ior = 1.1;
 		material->reflectivity = 0.5;
 	}
 	/*

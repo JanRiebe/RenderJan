@@ -34,7 +34,7 @@ Image* RenderScene(Scene* scene, int width, int height, int maxReflectionDepth)
 		}
 	}
 	tmp+=0.1;
-	cout << (1000000*sin(tmp)) <<endl;
+	//TODO not sure what this meant to print: cout << (1000000*sin(tmp)) <<endl;
 
 	img->setPixel(pix, width, height);
 	return img;
@@ -176,16 +176,19 @@ Light ReflectRefract(Ray* incommingRay, Point* pointOnSurface, Point* normal, Sp
 	{
 		l  = CastRay(*refractionRay, objects, lights, recursionDepth, maxRecursionDepth) * (1 - reflectivity);
 		l += CastRay(*reflectionRay, objects, lights, recursionDepth, maxRecursionDepth) * reflectivity;
+		//std::cout << "both" <<std::endl;
 	}
 	// If it's reflection only we only cast the reflection ray.
 	else if(reflectionRay)
 	{
 		l = CastRay(*reflectionRay, objects, lights, recursionDepth, maxRecursionDepth) * reflectivity;
+		//std::cout << "reflect" <<std::endl;
 	}
 	// If it's refraction only we cast only the refraction ray.
 	else if(refractionRay)
 	{
 			l  = CastRay(*refractionRay, objects, lights, recursionDepth, maxRecursionDepth) * (1 - reflectivity);
+			//std::cout << "refract" <<std::endl;
 	}
 	// If there should be refraction only but it is full internal reflection, we cast a reflection ray.
 	else
