@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "Image.h"
 #include <iostream>
+#include <stack>
 float tmp=0;
 /*
 Renders the scene and returns a pointer to the rendered image.
@@ -216,30 +217,43 @@ Ray* CreateReflectionRay(Ray* incommingRay, Point* reflectionPosition, Point* su
 }
 
 
-
+std::stack<float> iorStack;
 
 Ray* CreateRefractionRay(Ray* incommingRay, Point* reflectionPosition, Point* surfaceNormal, const float &ior)
 {
 	// The projection of the incomming ray onto the surface normal.
 	float cosi = clamp(-1, 1, Point::DotProduct(surfaceNormal, &incommingRay->direction));
 
-	//float etai = incommingRay->lastIOR, etat = ior;
+	// The ior is a quality of the material on the other side of the surface.
+	// If we enter an object, it is the quality of the material of the object.
+	// If we leave the object, it is the quality of the material of its surroundings.
+	float iorOfOtherSide = ior;
+
 	Point normal = *surfaceNormal;
+
 	// If the projection of the incomming ray on the surface normal is negative we are coming from the outside of the object.
 	// In this case we invert the projection, because it needs to be positive for further calculation.
+	// We also put the previous ior on the iorStack, so that we can revert to it when we are leaving the object.
 	if (cosi < 0)
 	{
 		cosi = -cosi;
+		iorStack.push(incommingRay->lastIOR);
 	}
 	// If we are coming from the inside of the object, we negate the normal, because we need to have it pointing roughly in the direction that the ray will go.
+	// We also take the last ior from the iorStack and use it as the new one.
 	else
 	{
-	 	//std::swap(etai, etat);
 		normal = -normal;
+
+		if(!iorStack.empty())
+		{
+			iorOfOtherSide = iorStack.top();
+			iorStack.pop();
+		}
 	}
 	// The relativeIOR determines how the ray will be refracted.
 	// It is the ratio between the IORs of the materials of the materials of the incomming and outgoing ray.
-	float relativeIOR = incommingRay->lastIOR / ior;
+	float relativeIOR = incommingRay->lastIOR / iorOfOtherSide;
 	// The sign of k indicates whether a total internal reflection happens.
 	// The square root of k is also necessary for the calculation of the outgoing direction,
 	// but we can avoid unnecessary calculation by checking k first.
@@ -253,6 +267,6 @@ Ray* CreateRefractionRay(Ray* incommingRay, Point* reflectionPosition, Point* su
 	else
 	{
 		#define OUT_DIR incommingRay->direction * relativeIOR + normal * (relativeIOR * cosi - sqrtf(k))
-		return new Ray(*reflectionPosition - normal*shadowBias, OUT_DIR, ior);
+		return new Ray(*reflectionPosition - normal*shadowBias, OUT_DIR, iorOfOtherSide);
 	}
 }

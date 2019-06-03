@@ -276,8 +276,8 @@ void RenderViewer::SetupTestScene()
 	{
 		material = new Material();
 		material->baseColor = {1,1,1};
-		material->ior = 1.1;
-		material->reflectivity = 0.5;
+		material->ior = 1.4;
+		material->reflectivity = 0;
 	}
 	/*
 	//lights.push_back(LightSource(Point(0.0f, 0.0f, -100.0f), Point(1.0f, 0.0f, 0.0f), 1.0f));
