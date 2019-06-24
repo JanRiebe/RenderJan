@@ -58,7 +58,16 @@
             "color_R" : 1,
             "color_G" : 1,
             "color_B" : 1,
-            "intensity": 30000
+            "intensity": 100000
+        },
+        {
+            "pos_X": -100,
+            "pos_Y": 100,
+            "pos_Z": 0,
+            "color_R" : 0,
+            "color_G" : 1,
+            "color_B" : 0,
+            "intensity": 100000
         }
     ]
 }

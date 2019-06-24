@@ -117,7 +117,7 @@ Light CalculateOutgoingLightFromPointAtSurface(Sphere* object, Point p, Ray view
 			// Lamberian
 			Point viewingDirection = pToLight.GetUnitVector();
 			float facingRatio = std::max(0.0f, Point::DotProduct(&viewingDirection, &normal));
-			float intensityAfterFalloff = 1;
+			float intensityAfterFalloff = lightSource->scale;
 			if(lightSource->isPoint) intensityAfterFalloff = InverseSquareFalloff(lightSource->scale, pToLight.CalculateLength());
 			l.r += clamp(0, 1, object->color.x * intensityAfterFalloff * facingRatio * lightSource->color.x);
 			l.g += clamp(0, 1, object->color.y * intensityAfterFalloff * facingRatio * lightSource->color.y);

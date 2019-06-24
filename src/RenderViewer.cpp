@@ -368,7 +368,7 @@ void RenderViewer::ReadSceneFile(string path)
 				Point(pos_X, pos_Y, pos_Z),	// position
 				Point(color_R, color_G, color_B),				// color
 				intensity,												// intensity
-				false														// is point light
+				true														// is point light
 			));
 	}
 }
