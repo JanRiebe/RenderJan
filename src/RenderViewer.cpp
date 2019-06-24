@@ -319,7 +319,7 @@ void RenderViewer::ReadSceneFile(string path)
 		string name = (root["materials"][i]["id"]).asString();
 		Point baseColor = {root["materials"][i]["base_R"].asFloat(), root["materials"][i]["base_G"].asFloat(), root["materials"][i]["base_B"].asFloat()};
 		float ior = root["materials"][i]["ior"].asFloat();
-		float reflectivity = root["materials"][i]["reflctivity"].asFloat();
+		float reflectivity = root["materials"][i]["reflectivity"].asFloat();
 		scene->materials.insert ( std::pair<string, Material>(name,{baseColor, ior, reflectivity}) );
 	}
 
