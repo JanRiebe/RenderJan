@@ -1,0 +1,64 @@
+{
+    "materials":
+    [
+        {
+            "id": "test",
+            "base_R" : 1,
+            "base_G" : 1,
+            "base_B" : 1,
+            "ior" : 1.4,
+            "reflectivity" : 0.5
+        },
+        {
+            "id": "red",
+            "base_R" : 1,
+            "base_G" : 0,
+            "base_B" : 0,
+            "ior" : 1.4,
+            "reflectivity" : 0.5
+        }
+    ],
+    "surfaces":
+    [
+        {
+            "pos_X": 0,
+            "pos_Y": 0,
+            "pos_Z": 0,
+            "size": 40,
+            "material": "test"
+        },
+        {
+            "pos_X": -80,
+            "pos_Y": 0,
+            "pos_Z": 0,
+            "size": 10,
+            "material": "red"
+        },
+        {
+            "pos_X": 20,
+            "pos_Y": -20,
+            "pos_Z": -60,
+            "size": 10,
+            "material": "test"
+        },
+        {
+            "pos_X": -10,
+            "pos_Y": -20,
+            "pos_Z": -60,
+            "size": 10,
+            "material": "test"
+        }
+    ],
+    "lights":
+    [
+        {
+            "pos_X": 100,
+            "pos_Y": 100,
+            "pos_Z": 0,
+            "color_R" : 1,
+            "color_G" : 1,
+            "color_B" : 1,
+            "intensity": 30000
+        }
+    ]
+}

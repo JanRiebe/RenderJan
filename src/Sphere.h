@@ -5,7 +5,7 @@
 
 class Point;
 class Ray;
-class Material;
+struct Material;
 
 class Sphere : public SceneElement
 {

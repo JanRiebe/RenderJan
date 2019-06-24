@@ -73,8 +73,13 @@ Light CastRay(Ray r, vector<Sphere>* objects, vector<LightSource>* lights, int r
 	if (closestObject != objects->end())
 		return CalculateOutgoingLightFromPointAtSurface(&(*closestObject), closestPoint, r, lights, objects, ++recursionDepth, maxRecursionDepth);
 	else
+	{
 		// Returning background colors
-		return{ r.direction.x/2 +0.5f , r.direction.y /2 +0.5f, r.direction.z /2 +0.5f };
+		float checkerMult = 1.0f;
+		if (((int)(r.direction.x*100) % 10) > 5 )
+			checkerMult = 0.5f;
+		return{ r.direction.x/2 +0.5f * checkerMult, r.direction.y /2 +0.5f * checkerMult, r.direction.z /2 +0.5f *checkerMult};
+	}
 }
 
 // Casts a ray and returns whether it did not hit an object.

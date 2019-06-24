@@ -1,7 +1,11 @@
 #include "RenderViewer.h"
 #include <string>
 #include "Scene.h"
-#include "Material.h"
+//#include "Material.h"
+#include "json/json.h"
+#include <fstream>
+#include <iostream>
+#include <map>
 
 
 // Screen dimension constants
@@ -29,6 +33,7 @@ RenderViewer::RenderViewer()
 	else
 	{
 		SetupTestScene();
+		ReadSceneFile("../test_scene_file.json");
 		Render();
 		EventLoop();
 	}
@@ -133,6 +138,7 @@ void RenderViewer::EventLoop()
 					case SDLK_RETURN:
 						Render();
 						break;
+						/*
 					case SDLK_s:
 						//add sphere
 						scene->spheres.push_back(
@@ -156,6 +162,7 @@ void RenderViewer::EventLoop()
 						// Setting the just created SceneElement as the currently selected one.
 						selected = &(scene->lights.back());
 						break;
+						*/
 					case SDLK_c:
 						// Setting the camera as the currently selected SceneElement.
 						selected = &(scene->camera);
@@ -222,6 +229,7 @@ void RenderViewer::EventLoop()
 					default:
 						break;
 					}
+					if(!quit)
 					Render();
 			}
 		}
@@ -271,7 +279,7 @@ void RenderViewer::SetupTestScene()
 	scene = new Scene();
 	scene->camera.imageWidth = SCREEN_WIDTH;
 	scene->camera.imageHeight = SCREEN_HEIGHT;
-
+/*
 	if(material == nullptr)
 	{
 		material = new Material();
@@ -293,6 +301,77 @@ void RenderViewer::SetupTestScene()
 */
 }
 
+
+void RenderViewer::ReadSceneFile(string path)
+{
+
+	scene = new Scene();
+	scene->camera.imageWidth = SCREEN_WIDTH;
+	scene->camera.imageHeight = SCREEN_HEIGHT;
+
+	std::ifstream scene_file(path, std::ifstream::binary);
+	Json::Value root;
+	scene_file >> root;
+
+	// Reading in materials.
+	for (int i=0;i<root["materials"].size(); i++)
+	{
+		string name = (root["materials"][i]["id"]).asString();
+		Point baseColor = {root["materials"][i]["base_R"].asFloat(), root["materials"][i]["base_G"].asFloat(), root["materials"][i]["base_B"].asFloat()};
+		float ior = root["materials"][i]["ior"].asFloat();
+		float reflectivity = root["materials"][i]["reflctivity"].asFloat();
+		scene->materials.insert ( std::pair<string, Material>(name,{baseColor, ior, reflectivity}) );
+	}
+
+	// Reading in surfaces.
+	for (int i=0;i<root["surfaces"].size(); i++)
+	{
+		// Reasing in data.
+		float pos_X = root["surfaces"][i]["pos_X"].asFloat();
+		float pos_Y = root["surfaces"][i]["pos_Y"].asFloat();
+		float pos_Z = root["surfaces"][i]["pos_Z"].asFloat();
+		float size = root["surfaces"][i]["size"].asFloat();
+		string material = root["surfaces"][i]["material"].asString();
+
+		// Ensuring the requested material is present.
+		map<string,Material>::iterator it = scene->materials.find(material);
+		if(it == scene->materials.end())
+		{
+			std::cout << "No material "<<material<< " found for surface "<<i<<" assigning standard material.\n";
+			material = "test";
+		}
+
+		// Creating the sphere.
+		scene->spheres.push_back(
+			Sphere(
+				Point(pos_X, pos_Y, pos_Z),
+				size,
+				&scene->materials[material]
+			)
+		);
+	}
+
+	// Reading in lights.
+	for (int i=0;i<root["lights"].size(); i++)
+	{
+		float pos_X = root["lights"][i]["pos_X"].asFloat();
+		float pos_Y = root["lights"][i]["pos_Y"].asFloat();
+		float pos_Z = root["lights"][i]["pos_Z"].asFloat();
+		float color_R = root["lights"][i]["color_R"].asFloat();
+		float color_G = root["lights"][i]["color_G"].asFloat();
+		float color_B = root["lights"][i]["color_B"].asFloat();
+		float intensity = root["lights"][i]["intensity"].asFloat();
+
+
+		scene->lights.push_back(
+			LightSource(
+				Point(pos_X, pos_Y, pos_Z),	// position
+				Point(color_R, color_G, color_B),				// color
+				intensity,												// intensity
+				false														// is point light
+			));
+	}
+}
 
 void RenderViewer::Render()
 {
