@@ -226,6 +226,10 @@ void RenderViewer::EventLoop()
 							selected->position.z-=10;
 						}
 						break;
+					case SDLK_l:
+						ReloadScene("../test_scene_file.json");
+						Render();
+						break;
 					default:
 						break;
 					}
@@ -373,6 +377,12 @@ void RenderViewer::ReadSceneFile(string path)
 				true														// is point light
 			));
 	}
+}
+
+void RenderViewer::ReloadScene(string sceneDefinitionFilePath)
+{
+	delete scene;
+	ReadSceneFile(sceneDefinitionFilePath);
 }
 
 void RenderViewer::Render()

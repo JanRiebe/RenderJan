@@ -39,8 +39,9 @@ private:
 
 	void SetupTestScene();
 	void ReadSceneFile(string path);
+	void ReloadScene(string sceneDefinitionFilePath);
 	void Render();
-
+	
 public:
 	RenderViewer();
 	~RenderViewer();
