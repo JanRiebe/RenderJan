@@ -7,7 +7,9 @@
             "base_G" : 1,
             "base_B" : 1,
             "ior" : 1.4,
-            "reflectivity" : 0.5
+            "reflectivity" : 0,
+            "translucency" : 1,
+            "fresnel": 0
         },
         {
             "id": "red",
@@ -15,7 +17,9 @@
             "base_G" : 0,
             "base_B" : 0,
             "ior" : 1.4,
-            "reflectivity" : 0.5
+            "reflectivity" : 0.5,
+            "translucency" : 0.5,
+            "fresnel": 0.5
         }
     ],
     "surfaces":

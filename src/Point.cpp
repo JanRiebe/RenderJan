@@ -57,6 +57,14 @@ Point Point::operator-()
 }
 
 
+void Point::flip()
+{
+	x = -x;
+	y = -y;
+	z = -z;
+}
+
+
 Point* Point::CrossProduct(const Point* v1, const Point* v2)
 {
 	return new Point(

@@ -49,6 +49,8 @@ public:
 	Point operator-(const Point p2);
 	Point operator-();
 
+	void flip();
+
 	/// <summary>Calculates the cross product of two points.
 	/// <param name="p1">p1: A pointer to a Point.</param>
 	/// <param name="p2">p2: A pointer to a Point.</param>

@@ -52,6 +52,17 @@ float Sphere::GetReflectivityAtPoint(Point* p)
   return material->reflectivity;
 }
 
+float Sphere::GetTranslucencyAtPoint(Point* p)
+{
+  return material->translucency;
+}
+
+
+float Sphere::GetFresnelAtPoint(Point* p)
+{
+  return material->fresnel;
+}
+
 
 float Sphere::GetIORAtPoint(Point* p)
 {

@@ -21,6 +21,10 @@ struct Light
 	{
 		return Light(r*f, g*f, b*f);
 	}
+	Light operator+(Light other)
+	{
+		return Light(r+other.r, g+other.g, b+other.b);
+	}
 };
 
 
@@ -29,7 +33,8 @@ struct Ray
 	Point origin;
 	Point direction;
 	float lastIOR;
-	Ray(Point origin, Point direction, float lastIOR): origin(origin), direction(direction), lastIOR(lastIOR){};
+	float relativeIOR;
+	Ray(Point origin, Point direction, float lastIOR, float relativeIOR): origin(origin), direction(direction), lastIOR(lastIOR), relativeIOR(relativeIOR){};
 };
 
 /*

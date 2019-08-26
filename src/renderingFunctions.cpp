@@ -111,7 +111,7 @@ Light CalculateOutgoingLightFromPointAtSurface(Sphere* object, Point p, Ray view
 	{
 		// Shadow ray
 		Point pToLight = (lightSource->position - p);
-		if (CastShadowRay(Ray( p + normal*shadowBias,  pToLight, viewRay.lastIOR ), objects))
+		if (CastShadowRay(Ray( p + normal*shadowBias,  pToLight, viewRay.lastIOR, viewRay.relativeIOR ), objects))
 		{
 			// If the shadow ray didn't hit any object, the light is visible.
 			// Lamberian
@@ -167,40 +167,63 @@ Else
 
 Light ReflectRefract(Ray* incommingRay, Point* pointOnSurface, Point* normal, Sphere* surface, vector<LightSource>* lights, vector<Sphere>* objects, int recursionDepth, int maxRecursionDepth)
 {
-	Light l = Light{ 0, 0, 0 };
 	Ray* reflectionRay = nullptr;
 	Ray* refractionRay = nullptr;
 
+
 	float reflectivity = surface->GetReflectivityAtPoint(pointOnSurface);
+	float translucency = surface->GetTranslucencyAtPoint(pointOnSurface);
+
 	// We only need to cast both rays, if it isn't toal reflection or total refraction.
 	if(reflectivity > 0)
-		reflectionRay = CreateReflectionRay(incommingRay, pointOnSurface, normal, surface->GetIORAtPoint(pointOnSurface));
-	if(reflectivity < 1)
-		refractionRay = CreateRefractionRay(incommingRay, pointOnSurface, normal, surface->GetIORAtPoint(pointOnSurface));
-	// If there is both reflection and refraction, we cast both rays and give each the right amount of light.
-	if(reflectionRay && refractionRay)
+		reflectionRay = CreateReflectionRay(incommingRay, pointOnSurface, normal);//, iorOfThisSide);
+
+	// Calculating refraction if the object is not totally reflecting.
+	if(translucency > 0)
 	{
-		l  = CastRay(*refractionRay, objects, lights, recursionDepth, maxRecursionDepth) * (1 - reflectivity);
-		l += CastRay(*reflectionRay, objects, lights, recursionDepth, maxRecursionDepth) * reflectivity;
-		//std::cout << "both" <<std::endl;
+		float iorOfThisSide = incommingRay->lastIOR;
+		float iorOfSurface = surface->GetIORAtPoint(pointOnSurface);
+		float relativeIOR;
+		float nextRaysIOR;
+
+		// Projection of the incomming ray onto the surface normal.
+		float cosi = clamp(-1, 1, Point::DotProduct(normal, &incommingRay->direction));
+		// Entering
+		if (cosi < 0)
+		{
+			cosi = -cosi;
+			relativeIOR = iorOfThisSide / iorOfSurface;
+			nextRaysIOR = iorOfSurface;
+		}
+		// Leaving
+		else
+		{
+			normal->flip();
+
+			relativeIOR = iorOfSurface / 1; //nextRaysIOR;
+			nextRaysIOR = 1;// iorOfSurface * incommingRay->relativeIOR; //1;
+		}
+
+		// Changing the reflectivity depending on fresnel.
+		translucency *=(1 - Fresnel(incommingRay, pointOnSurface, normal, iorOfThisSide, relativeIOR, cosi, iorOfSurface)*surface->GetFresnelAtPoint(pointOnSurface));
+		//reflectivity = 0.0f;	//DEBUG
+
+		// Creating the refraction ray.
+		refractionRay = CreateRefractionRay(incommingRay, pointOnSurface, normal, relativeIOR, cosi, nextRaysIOR);
 	}
-	// If it's reflection only we only cast the reflection ray.
-	else if(reflectionRay)
+
+	// Casting rays that have been created.
+	Light reflectedLight = {0,0,0};
+	Light refractedLight = {0,0,0};
+	if(reflectionRay)
 	{
-		l = CastRay(*reflectionRay, objects, lights, recursionDepth, maxRecursionDepth) * reflectivity;
-		//std::cout << "reflect" <<std::endl;
+		reflectedLight = CastRay(*reflectionRay, objects, lights, recursionDepth, maxRecursionDepth);
 	}
-	// If it's refraction only we cast only the refraction ray.
-	else if(refractionRay)
+	if(refractionRay)
 	{
-			l  = CastRay(*refractionRay, objects, lights, recursionDepth, maxRecursionDepth) * (1 - reflectivity);
-			//std::cout << "refract" <<std::endl;
+		refractedLight  = CastRay(*refractionRay, objects, lights, recursionDepth, maxRecursionDepth);
 	}
-	// If there should be refraction only but it is full internal reflection, we cast a reflection ray.
-	else
-	{
-			//l = CastRay(*reflectionRay, objects, lights, recursionDepth, maxRecursionDepth) * reflectivity;
-	}
+	Light l = refractedLight * translucency; // reflectedLight * reflectivity * (1-translucency) + refractedLight * translucency;
 
 	// Cleaning up
 	if(reflectionRay)
@@ -208,61 +231,49 @@ Light ReflectRefract(Ray* incommingRay, Point* pointOnSurface, Point* normal, Sp
 	if(refractionRay)
 		delete refractionRay;
 
-		return l;
+	// Returning the light that was gathered at this point.
+	return l;
 }
 
 
 
 
-Ray* CreateReflectionRay(Ray* incommingRay, Point* reflectionPosition, Point* surfaceNormal, const float& ior)
+Ray* CreateReflectionRay(Ray* incommingRay, Point* reflectionPosition, Point* surfaceNormal)//, const float& ior)
 {
 	Point reflectionDirection = incommingRay->direction - (*surfaceNormal)*2*Point::DotProduct(surfaceNormal, &(incommingRay->direction));
-	Ray* r = new Ray(*reflectionPosition+*surfaceNormal*shadowBias, reflectionDirection, ior);
+	Ray* r = new Ray(*reflectionPosition+*surfaceNormal*shadowBias, reflectionDirection, incommingRay->lastIOR, incommingRay->relativeIOR);
 	return r;
 }
 
 
-std::stack<float> iorStack;
-
-Ray* CreateRefractionRay(Ray* incommingRay, Point* reflectionPosition, Point* surfaceNormal, const float &ior)
+//std::stack<float> iorStack;
+/*
+How the ior stack is to be used:
+The current ray carries the ior of the material we are in.
+When coming from the outside of an object this value is put on the stack,
+because it is the ior of the surrounding object.
+When leaving an object, it is popped off the stack and used as the ior
+of the other side.
+*/
+/*
+Point RefractDirection(const Point &incomming, const Point &surfaceNormal, const float &ior)
 {
-	// The projection of the incomming ray onto the surface normal.
-	float cosi = clamp(-1, 1, Point::DotProduct(surfaceNormal, &incommingRay->direction));
-
-	// The ior is a quality of the material on the other side of the surface.
-	// If we enter an object, it is the quality of the material of the object.
-	// If we leave the object, it is the quality of the material of its surroundings.
-	float iorOfOtherSide = ior;
-
-	Point normal = *surfaceNormal;
-
-	// If the projection of the incomming ray on the surface normal is negative we are coming from the outside of the object.
-	// In this case we invert the projection, because it needs to be positive for further calculation.
-	// We also put the previous ior on the iorStack, so that we can revert to it when we are leaving the object.
-	if (cosi < 0)
-	{
-		cosi = -cosi;
-		iorStack.push(incommingRay->lastIOR);
-	}
-	// If we are coming from the inside of the object, we negate the normal, because we need to have it pointing roughly in the direction that the ray will go.
-	// We also take the last ior from the iorStack and use it as the new one.
-	else
-	{
-		normal = -normal;
-
-		if(!iorStack.empty())
-		{
-			iorOfOtherSide = iorStack.top();
-			iorStack.pop();
-		}
-	}
-	// The relativeIOR determines how the ray will be refracted.
-	// It is the ratio between the IORs of the materials of the materials of the incomming and outgoing ray.
-	float relativeIOR = incommingRay->lastIOR / iorOfOtherSide;
+    float cosi = clamp(-1, 1, Point::DotProduct(surfaceNormal, incomming));
+    float etai = 1, etat = ior;
+    Point n = surfaceNormal;
+    if (cosi < 0) { cosi = -cosi; } else { std::swap(etai, etat); n= -surfaceNormal; }	//TODO it might be that the swapping of the surface normal is missing
+    float eta = etai / etat;
+    float k = 1 - eta * eta * (1 - cosi * cosi);
+    return k < 0 ? 0 : eta * I + (eta * cosi - sqrtf(k)) * n;
+}
+*/
+Ray* CreateRefractionRay(Ray* incommingRay, Point* reflectionPosition, Point* surfaceNormal, float relativeIOR, float cosi, float nextRaysIOR)
+{
 	// The sign of k indicates whether a total internal reflection happens.
 	// The square root of k is also necessary for the calculation of the outgoing direction,
 	// but we can avoid unnecessary calculation by checking k first.
 	float k = 1 - relativeIOR * relativeIOR * (1 - cosi * cosi);
+	//std::cout << "k = "<<k<<std::endl;
 	// If total internal reflecion happens, we return nullptr to indicate, that no refraction ray is necessary.
 	if( k < 0)
 	{
@@ -271,7 +282,116 @@ Ray* CreateRefractionRay(Ray* incommingRay, Point* reflectionPosition, Point* su
 	// Else we create a ray to be used as refraction ray.
 	else
 	{
-		#define OUT_DIR incommingRay->direction * relativeIOR + normal * (relativeIOR * cosi - sqrtf(k))
-		return new Ray(*reflectionPosition - normal*shadowBias, OUT_DIR, iorOfOtherSide);
+		#define OUT_DIR incommingRay->direction * relativeIOR + (*surfaceNormal) * (relativeIOR * cosi - sqrtf(k))
+		return new Ray(*reflectionPosition - (*surfaceNormal)*shadowBias, OUT_DIR, nextRaysIOR, relativeIOR);
 	}
 }
+
+
+float Fresnel(Ray* incommingRay, Point* reflectionPosition, Point* surfaceNormal, const float &iorOfThisSide, const float& relativeIOR, const float& cosi, const float&iorOfOtherSide)
+{
+	float etai = incommingRay->lastIOR, etat = iorOfOtherSide;
+
+	//float iorOfOtherSide = ior;
+	/*
+	if (cosi < 0)
+	{
+		//std::swap(etai, etat);
+			cosi = -cosi;
+	}
+	else
+	{
+		if(!iorStack.empty())
+		{
+			iorOfOtherSide = iorStack.top();
+		}
+	}
+	float relativeIOR = incommingRay->lastIOR / iorOfOtherSide;
+	*/
+	// Compute sini using Snell's law
+	//float sint = 1 - relativeIOR * relativeIOR * (1 - cosi * cosi);
+	float sint = relativeIOR * sqrtf(std::max(0.f, 1 - cosi * cosi));
+	//float sint = etai / etat * sqrtf(std::max(0.f, 1 - cosi * cosi));
+	// Total internal reflection
+	//std::cout << "sint = "<<sint<<" -sint** "<<(-sint*sint)<<std::endl;
+	if (sint < 0) {
+		return 1;
+	}
+	else {
+		float cost = sqrtf(std::max(0.f, 1 - sint * sint));
+		//cosi = fabsf(cosi);		//conputes absolute value. unnecessary because already done above
+		float Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
+		float Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
+		return (Rs * Rs + Rp * Rp) / 2;
+	}
+	// As a consequence of the conservation of energy, transmittance is given by:
+	// kt = 1 - kr;
+}
+/*
+void Common(Ray* incommingRay, Point* surfaceNormal, float &iorOfThisSide, float& relativeIOR, float& cosi, float&iorOfOtherSide)
+{
+	cosi = clamp(-1, 1, Point::DotProduct(surfaceNormal, &incommingRay->direction));
+
+	// The ior is a quality of the material on the other side of the surface.
+	// If we enter an object, it is the quality of the material of the object.
+	// If we leave the object, it is the quality of the material of its surroundings.
+	iorOfThisSide = incommingRay->lastIOR;
+
+	// If the projection of the incomming ray on the surface normal is negative we are coming from the outside of the object.
+	// In this case we invert the projection, because it needs to be positive for further calculation.
+	// We also put the previous ior on the iorStack, so that we can revert to it when we are leaving the object.
+	if (cosi < 0)
+	{
+		cosi = -cosi;
+		//iorStack.push(incommingRay->lastIOR);
+	}
+
+	else
+	{
+		iorOfOtherSide = surface
+		/*
+		if(!iorStack.empty())
+		{
+			iorOfOtherSide = iorStack.top();
+			//iorStack.pop();
+		}
+		*//*
+	}
+
+	relativeIOR = iorOfThisSide / iorOfOtherSide;
+
+/*
+		this method should return:
+		relativeIOR
+		cosi
+		incommingRay->direction
+		iorOfOtherSide
+		incommingRay->lastIOR
+*/
+//}
+
+
+/*
+Working implementation from website. Recalculates a lot what I do in CreateRefractionRay.
+void fresnel(Ray* incommingRay, Point* reflectionPosition, Point* surfaceNormal, const float &ior, float &kr)
+{
+	float cosi = clamp(-1, 1, Point::DotProduct(surfaceNormal, &incommingRay->direction));
+	float etai = 1, etat = ior;
+	if (cosi > 0) { std::swap(etai, etat); }
+	// Compute sini using Snell's law
+	float sint = etai / etat * sqrtf(std::max(0.f, 1 - cosi * cosi));
+	// Total internal reflection
+	if (sint >= 1) {
+		kr = 1;
+	}
+	else {
+		float cost = sqrtf(std::max(0.f, 1 - sint * sint));
+		cosi = fabsf(cosi);
+		float Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
+		float Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
+		kr = (Rs * Rs + Rp * Rp) / 2;
+	}
+	// As a consequence of the conservation of energy, transmittance is given by:
+	// kt = 1 - kr;
+}
+*/

@@ -20,6 +20,8 @@ public:
 	Point GetNormalAtPoint(Point* p);
 
 	float GetReflectivityAtPoint(Point* p);
+	float GetTranslucencyAtPoint(Point* p);
+	float GetFresnelAtPoint(Point* p);
 
 	float GetIORAtPoint(Point* p);
 };

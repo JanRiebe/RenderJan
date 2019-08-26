@@ -20,5 +20,5 @@ Ray Camera::PixelToRay(int x, int y)
   rayDirection = HomogVec(rayDirection);
   Point direction = Point(rayDirection[0],rayDirection[1], rayDirection[2]);
   Point::Normalise(&direction);
-  return Ray(position, direction, 1.0f);
+  return Ray(position, direction, 1.0f, 1.0f);
 }
