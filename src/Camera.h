@@ -8,7 +8,6 @@ class Camera : public SceneElement
 private:
   float aspectRatio;
   Matrix4x4 cameraToWorld;
-  Point rotation;
 
 public:
   float fieldOfView;

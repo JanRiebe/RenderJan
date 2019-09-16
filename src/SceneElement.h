@@ -11,5 +11,7 @@ public:
 
 	Point color;
 
-  SceneElement(Point pos, float scale, Point color);
+  Point rotation;
+
+  SceneElement(Point pos, Point rot, float scale, Point color);
 };

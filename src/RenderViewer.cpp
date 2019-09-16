@@ -8,9 +8,6 @@
 #include <map>
 
 
-// Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
 
 // The window we'll be rendering to
 SDL_Window* gWindow = nullptr;
@@ -114,7 +111,7 @@ void RenderViewer::EventLoop()
 	//Event handler
 	SDL_Event e;
 
-	SceneElement* selected = nullptr;
+	SceneElement* selected = &(scene->camera);
 
 	//While application is running
 	while (!quit) {
@@ -188,28 +185,28 @@ void RenderViewer::EventLoop()
 						// move selected light or sphere in y axis
 						if(selected)
 						{
-							selected->position.y+=10;
+							selected->position.y+=1;
 						}
 						break;
 					case SDLK_DOWN:
 						//move selected light or sphere in y axis
 						if(selected)
 						{
-							selected->position.y-=10;
+							selected->position.y-=1;
 						}
 						break;
 					case SDLK_LEFT:
 						//move selected light or sphere in x axis
 						if(selected)
 						{
-							selected->position.x+=10;
+							selected->position.x+=1;
 						}
 						break;
 					case SDLK_RIGHT:
 						// move selected light or sphere in x axis
 						if(selected)
 						{
-							selected->position.x-=10;
+							selected->position.x-=1;
 						}
 						break;
 					case SDLK_z:
@@ -258,6 +255,9 @@ bool RenderViewer::Init()
 	{
 		//Create window
 		gWindow = SDL_CreateWindow("Renderjan", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		int x,y;
+		SDL_GetWindowSize(gWindow,&x,&y);
+		std::cout << "window" <<x<<" "<<y<< '\n';
 		if (gWindow == NULL)
 		{
 			printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());

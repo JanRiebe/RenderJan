@@ -32,9 +32,8 @@ struct Ray
 {
 	Point origin;
 	Point direction;
-	float lastIOR;
 	float relativeIOR;
-	Ray(Point origin, Point direction, float lastIOR, float relativeIOR): origin(origin), direction(direction), lastIOR(lastIOR), relativeIOR(relativeIOR){};
+	Ray(Point origin, Point direction, float relativeIOR): origin(origin), direction(direction), relativeIOR(relativeIOR){};
 };
 
 /*

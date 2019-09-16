@@ -1,7 +1,7 @@
 #include "LightSource.h"
 #include "MathFunctions.h"
 
-LightSource::LightSource(const Point pos, const Point color, const float intensity, const bool isPoint): SceneElement(pos, intensity, color), isPoint(isPoint)
+LightSource::LightSource(const Point pos, const Point color, const float intensity, const bool isPoint): SceneElement(pos, pos, intensity, color), isPoint(isPoint)
 {
 }
 

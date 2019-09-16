@@ -6,10 +6,10 @@
             "base_R" : 1,
             "base_G" : 1,
             "base_B" : 1,
-            "ior" : 1.4,
-            "reflectivity" : 1,
-            "translucency" : 0,
-            "fresnel": 0
+            "ior" : 1.5,
+            "reflectivity" : 0,
+            "translucency" : 1,
+            "fresnel": 1
         },
         {
             "id": "red",
@@ -46,10 +46,17 @@
             "material": "test"
         },
         {
-            "pos_X": -10,
-            "pos_Y": -20,
+            "pos_X": -20,
+            "pos_Y": 0,
             "pos_Z": -60,
             "size": 10,
+            "material": "test"
+        },
+        {
+            "pos_X": 0,
+            "pos_Y": 0,
+            "pos_Z": 0,
+            "size": 5,
             "material": "test"
         }
     ],
