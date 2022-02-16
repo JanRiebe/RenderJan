@@ -1,5 +1,6 @@
 #include "BMPWriter.h"
 #include <iostream>
+#include <fstream>
 
 /*
 adapting this code https://en.wikipedia.org/wiki/User:Evercat/Buddhabrot.c
@@ -11,7 +12,7 @@ void BMPWriter::WriteBoolMap(const std::vector<bool> * const values, const int W
 
 
 	uint32_t headers[13];
-	FILE   * pFileSave;
+	//FILE   * pFileSave;
 	int x, y, i;
 
 	int      nExtraBytes = (WIDTH * 3) % 4;
@@ -33,13 +34,59 @@ void BMPWriter::WriteBoolMap(const std::vector<bool> * const values, const int W
 	headers[11] = 0;                   // biClrUsed
 	headers[12] = 0;                   // biClrImportant
 
-	errno_t err = fopen_s(&pFileSave, filename, "wb");
+	std::ofstream myfile;
+	myfile.open (filename);
+
+	// Output Headers
+		myfile << "BM";
+		for (i = 0; i < 13; i++)
+		{
+			myfile << (((headers[i]) >> 0) & 0xFF);
+			myfile << (((headers[i]) >> 8) & 0xFF);
+			myfile << (((headers[i]) >> 16) & 0xFF);
+			myfile << (((headers[i]) >> 24) & 0xFF);
+		}
+		uint8_t r;
+		uint8_t g;
+		uint8_t b;
+		// written upside down
+		for (y = HEIGHT - 1; y >= 0; y--)
+		{
+			for (x = 0; x < WIDTH; x++)
+			{
+				if (values->at(x + WIDTH*y))
+				{
+					r = 'a';
+					g = 'a';
+					b = 'a';
+				}
+				else
+				{
+					r = 0;
+					g = 0;
+					b = 255;
+				}
+
+
+				// written BGR
+				myfile << b;
+				myfile << g;
+				myfile << r;
+			}
+
+			if (nExtraBytes) // lines must be of lengths divisible by 4 bytes.
+				for (i = 0; i < nExtraBytes; i++)
+					myfile << 0;
+		}
+
+	myfile.close();
+	/*
+	error_t err = fopen_s(&pFileSave, filename, "wb");
 	if (err != 0)
 	{
 		std::cout << "The file " << filename << " could not be opened.\n";
 		std::cout << "Error number: " << err << std::endl;
 	}
-
 	if (pFileSave)
 	{
 		// Output Headers
@@ -88,6 +135,9 @@ void BMPWriter::WriteBoolMap(const std::vector<bool> * const values, const int W
 
 	}
 
+	*/
+
+
 }
 
 
@@ -96,7 +146,7 @@ void BMPWriter::WriteFloatMap(const std::vector<float> * const values, const int
 
 
 	uint32_t headers[13];
-	FILE   * pFileSave;
+	//FILE   * pFileSave;
 	int x, y, i;
 
 	int      nExtraBytes = (WIDTH * 3) % 4;
@@ -118,6 +168,52 @@ void BMPWriter::WriteFloatMap(const std::vector<float> * const values, const int
 	headers[11] = 0;                   // biClrUsed
 	headers[12] = 0;                   // biClrImportant
 
+
+	std::ofstream myfile;
+	myfile.open (filename);
+	// Output Headers
+	myfile << "BM";
+	for (i = 0; i < 13; i++)
+	{
+		myfile << (((headers[i]) >> 0) & 0xFF);
+		myfile << (((headers[i]) >> 8) & 0xFF);
+		myfile << (((headers[i]) >> 16) & 0xFF);
+		myfile << (((headers[i]) >> 24) & 0xFF);
+	}
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+	// written upside down
+	for (y = HEIGHT - 1; y >= 0; y--)
+	{
+		for (x = 0; x < WIDTH; x++)
+		{
+			if (values->at(x + WIDTH*y) <= 1)
+			{
+				r = (uint8_t)((values->at(x + WIDTH*y))*255);
+				g = r;
+				b = r;
+			}
+			else
+			{
+				r = 255;
+				g = 255;
+				b = 255;
+			}
+
+
+			// written BGR
+			myfile << b;
+			myfile << g;
+			myfile << r;
+		}
+
+		if (nExtraBytes) // lines must be of lengths divisible by 4 bytes.
+			for (i = 0; i < nExtraBytes; i++)
+				myfile << 0;
+	}
+	myfile.close();
+	/*
 	errno_t err = fopen_s(&pFileSave, filename, "wb");
 	if (err != 0)
 	{
@@ -172,7 +268,7 @@ void BMPWriter::WriteFloatMap(const std::vector<float> * const values, const int
 		fclose(pFileSave);
 
 	}
-
+*/
 }
 
 
