@@ -1,7 +1,4 @@
 build/
 
-cmake/
+.cache
 
-TODO*
-
-CMakeLists.txt
