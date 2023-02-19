@@ -6,6 +6,7 @@
 #include "RenderViewer.h"
 
 #include "MathFunctions.h"
+#include "SampleViewer.h"
 
 using namespace std;
 
@@ -79,8 +80,8 @@ int main(int argc, char* args[])
 
 
 
-
-	RenderViewer rendView;
+	SampleViewer sampView;
+	//RenderViewer rendView;
 
 	return 0;
 }

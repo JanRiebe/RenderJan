@@ -21,6 +21,14 @@ struct Light
 	{
 		return Light(r*f, g*f, b*f);
 	}
+	Light operator/(float f)
+	{
+		return Light(r/f, g/f, b/f);
+	}
+	Light operator/=(int f)
+	{
+		return Light(r/f, g/f, b/f);
+	}
 	Light operator+(Light other)
 	{
 		return Light(r+other.r, g+other.g, b+other.b);

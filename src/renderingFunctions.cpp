@@ -74,6 +74,7 @@ Light CastRay(Ray r, vector<Sphere>* objects, vector<LightSource>* lights, int r
 		return CalculateOutgoingLightFromPointAtSurface(&(*closestObject), closestPoint, r, lights, objects, ++recursionDepth, maxRecursionDepth);
 	else
 	{
+		return {0,0,0};
 		// Returning background colors
 		float checkerMult = 1.0f;
 		if (((int)(r.direction.x*100) % 10) > 5 )

@@ -229,8 +229,8 @@ void RenderViewer::EventLoop()
 						break;
 					default:
 						break;
-					}
-					if(!quit)
+				}
+				if(!quit)
 					Render();
 			}
 		}
